@@ -51,7 +51,8 @@ namespace DotNetAppBase.Std.Library
         public static class Configs
         {
             [Localizable(false)]
-            public static SettingsBuilder XAppSettings(string sectionID) => new SettingsBuilder(sectionID, "AppSettings");
+            public static SettingsBuilder CustomAppSettings(string sectionID, string settingID = null, string directory = null) => new SettingsBuilder(sectionID, settingID, directory);
+
 #if !NETSTANDARD
             public static readonly ConfigWrapper<string, string> AppSettings = new ConfigWrapper<string, string>(s => ConfigurationManager.AppSettings[s]);
 
