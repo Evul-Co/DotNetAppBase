@@ -27,20 +27,19 @@
 
 using System;
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.TypedNumber
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.TypedNumber;
+
+public class XNumberAttribute : XValidationAttribute
 {
-    public class XNumberAttribute : XValidationAttribute
-    {
-        public XNumberAttribute()
-            : this(EDataType.Custom, EValidationMode.MaskRegEx) { }
+    public XNumberAttribute()
+        : this(EDataType.Custom, EValidationMode.MaskRegEx) { }
 
-        protected XNumberAttribute(EDataType dataType, EValidationMode mode)
-            : base(dataType, mode) { }
+    protected XNumberAttribute(EDataType dataType, EValidationMode mode)
+        : base(dataType, mode) { }
 
-        public override string Mask => throw new NotImplementedException();
+    public override string Mask => throw new NotImplementedException();
 
-        public int Precision { get; set; }
+    public int Precision { get; set; }
 
-        protected override bool InternalIsValid(object value) => true;
-    }
+    protected override bool InternalIsValid(object value) => true;
 }

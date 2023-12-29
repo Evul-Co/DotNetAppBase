@@ -28,14 +28,13 @@
 using System;
 using System.ComponentModel;
 
-namespace DotNetAppBase.Std.Exceptions.Base
+namespace DotNetAppBase.Std.Exceptions.Base;
+
+public class XInvalidOperationException : XException
 {
-    public class XInvalidOperationException : XException
-    {
-        public XInvalidOperationException() { }
+    public XInvalidOperationException() { }
 
-        public XInvalidOperationException([Localizable(false)] string message) : base(message) { }
+    public XInvalidOperationException([Localizable(false)] string message) : base(message) { }
 
-        public XInvalidOperationException(string message, Exception innerException) : base(message, innerException) { }
-    }
+    public XInvalidOperationException(string message, Exception innerException) : base(message, innerException) { }
 }

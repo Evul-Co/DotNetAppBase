@@ -27,93 +27,98 @@
 
 using System;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using DotNetAppBase.Std.Exceptions.Assert;
 
-namespace DotNetAppBase.Std.Library
+namespace DotNetAppBase.Std.Library;
+
+public partial class XHelper
 {
-    public partial class XHelper
-    {
-        // ReSharper disable InconsistentNaming
-        public static class I18n
+    // ReSharper disable InconsistentNaming
+    public static class I18n
         // ReSharper restore InconsistentNaming
+    {
+        public enum ELanguage
         {
-            public enum ELanguage
+            Invariant = 0,
+            Brazil = 1,
+            Paraguay = 2
+        }
+
+        private static ELanguage _currentLanguage;
+        private static EventHandler _currentLanguageChanged;
+
+        static I18n()
+        {
+            _currentLanguage = ELanguage.Brazil;
+
+            InternalCurrentLanguageChanged();
+        }
+
+        public static CultureInfo CurrentCulture { get; private set; }
+
+        public static ELanguage CurrentLanguage
+        {
+            get => _currentLanguage;
+            set
             {
-                Invariant = 0,
-                Brazil = 1,
-                Paraguay = 2
-            }
-
-            private static ELanguage _currentLanguage;
-            private static EventHandler _currentLanguageChanged;
-
-            static I18n()
-            {
-                _currentLanguage = ELanguage.Invariant;
-
-                InternalCurrentLanguageChanged();
-            }
-
-            public static CultureInfo CurrentCulture { get; private set; }
-
-            public static ELanguage CurrentLanguage
-            {
-                get => _currentLanguage;
-                set
+                if (_currentLanguage != value)
                 {
-                    if (_currentLanguage != value)
-                    {
-                        XContract.IsEnumValid(nameof(CurrentLanguage), value);
+                    XContract.IsEnumValid(nameof(CurrentLanguage), value);
 
-                        _currentLanguage = value;
+                    _currentLanguage = value;
 
-                        InternalCurrentLanguageChanged();
+                    InternalCurrentLanguageChanged();
 
-                        _currentLanguageChanged?.Invoke(null, EventArgs.Empty);
-                    }
+                    _currentLanguageChanged?.Invoke(null, EventArgs.Empty);
                 }
             }
+        }
 
-            public static string NumberDecimalSeparator => CurrentCulture.NumberFormat.NumberDecimalSeparator;
+        public static string NumberDecimalSeparator => CurrentCulture.NumberFormat.NumberDecimalSeparator;
 
-            public static event EventHandler CurrentLanguageChanged
+        public static event EventHandler CurrentLanguageChanged
+        {
+            add
             {
-                add
+                _currentLanguageChanged += value;
+
+                if (_currentLanguage == ELanguage.Invariant)
                 {
-                    _currentLanguageChanged += value;
-
-                    value(typeof(I18n), EventArgs.Empty);
+                    return;
                 }
-                remove => _currentLanguageChanged -= value;
-            }
 
-            private static CultureInfo IdentifyCulture(ELanguage currentLanguage)
+                value(typeof(I18n), EventArgs.Empty);
+            }
+            remove => _currentLanguageChanged -= value;
+        }
+
+        private static CultureInfo IdentifyCulture(ELanguage currentLanguage)
+        {
+            switch (currentLanguage)
             {
-                switch (currentLanguage)
-                {
-                    case ELanguage.Brazil:
-                        return new CultureInfo("pt-BR");
+                case ELanguage.Brazil:
+                    return new CultureInfo("pt-BR");
 
-                    case ELanguage.Paraguay:
-                        return new CultureInfo("es-PY");
+                case ELanguage.Paraguay:
+                    return new CultureInfo("es-PY");
 
-                    default:
-                        return CultureInfo.InvariantCulture;
-                }
+                default:
+                    return CultureInfo.InvariantCulture;
             }
+        }
 
-            private static void InternalCurrentLanguageChanged()
-            {
-                CurrentCulture = IdentifyCulture(_currentLanguage);
+        private static void InternalCurrentLanguageChanged()
+        {
+            CurrentCulture = IdentifyCulture(_currentLanguage);
 
-                Thread.CurrentThread.CurrentCulture = CurrentCulture;
-                Thread.CurrentThread.CurrentUICulture = CurrentCulture;
+            CultureInfo.CurrentCulture = CurrentCulture;
 
-                CultureInfo.DefaultThreadCurrentCulture = CurrentCulture;
-                CultureInfo.DefaultThreadCurrentUICulture = CurrentCulture;
-            }
+            Thread.CurrentThread.CurrentCulture = CurrentCulture;
+            Thread.CurrentThread.CurrentUICulture = CurrentCulture;
+
+            CultureInfo.DefaultThreadCurrentCulture = CurrentCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CurrentCulture;
         }
     }
 }

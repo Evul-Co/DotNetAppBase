@@ -27,15 +27,14 @@
 
 using System.Collections.Generic;
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Business
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Business;
+
+public interface IEntityNode
 {
-    public interface IEntityNode
-    {
-        IEnumerable<IEntityNode> Children { get; }
+    IEnumerable<IEntityNode> Children { get; }
 
-        bool IsParent { get; }
-        string Name { get; }
+    bool IsParent { get; }
+    string Name { get; }
 
-        IEntityNode Parent { get; }
-    }
+    IEntityNode Parent { get; }
 }

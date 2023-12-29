@@ -25,10 +25,9 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Business
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Business;
+
+public interface IEntityWorkWithConcurrency : IEntity
 {
-    public interface IEntityWorkWithConcurrency : IEntity
-    {
-        byte[] RowVersion { get; set; }
-    }
+    byte[] RowVersion { get; set; }
 }

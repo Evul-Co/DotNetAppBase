@@ -25,10 +25,9 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Db.Contract
+namespace DotNetAppBase.Std.Db.Contract;
+
+public interface IDbAccessProvider
 {
-    public interface IDbAccessProvider
-    {
-        IDbAccess GetAccess();
-    }
+    IDbAccess GetAccess();
 }

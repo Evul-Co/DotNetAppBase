@@ -29,176 +29,175 @@ using System;
 using System.Runtime.InteropServices;
 using DotNetAppBase.Std.Exceptions.Contract;
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Primitives
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Primitives;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct XTimeSpan : IEquatable<XTimeSpan>, IComparable<TimeSpan>, IComparable<XTimeSpan>
 {
-    [StructLayout(LayoutKind.Sequential)]
-    public struct XTimeSpan : IEquatable<XTimeSpan>, IComparable<TimeSpan>, IComparable<XTimeSpan>
+    public const int DaysPerYear = 365;
+
+    public int Months { get; set; }
+
+    public int Years { get; set; }
+
+    public TimeSpan TimeSpan { get; set; }
+
+    public long Ticks => ((TimeSpan) this).Ticks;
+
+    public int Days => ((TimeSpan) this).Days;
+
+    public int Hours => ((TimeSpan) this).Hours;
+
+    public int Milliseconds => ((TimeSpan) this).Milliseconds;
+
+    public int Minutes => ((TimeSpan) this).Minutes;
+
+    public int Seconds => ((TimeSpan) this).Seconds;
+
+    public double TotalDays => ((TimeSpan) this).TotalDays;
+
+    public double TotalHours => ((TimeSpan) this).TotalHours;
+
+    public double TotalMilliseconds => ((TimeSpan) this).TotalMilliseconds;
+
+    public double TotalMinutes => ((TimeSpan) this).TotalMinutes;
+
+    public double TotalSeconds => ((TimeSpan) this).TotalSeconds;
+
+    public XTimeSpan Add(XTimeSpan number) => AddInternal(this, number);
+
+    public XTimeSpan Subtract(XTimeSpan timeSpan) => SubtractInternal(this, timeSpan);
+
+    public static XTimeSpan operator +(XTimeSpan left, XTimeSpan right) => AddInternal(left, right);
+
+    public static XTimeSpan operator +(XTimeSpan left, TimeSpan right) => AddInternal(left, right);
+
+    public static XTimeSpan operator +(TimeSpan left, XTimeSpan right) => AddInternal(left, right);
+
+    public static XTimeSpan operator -(XTimeSpan value) => value.Negate();
+
+    public static XTimeSpan operator -(XTimeSpan left, XTimeSpan right) => SubtractInternal(left, right);
+
+    public static XTimeSpan operator -(TimeSpan left, XTimeSpan right) => SubtractInternal(left, right);
+
+    public static XTimeSpan operator -(XTimeSpan left, TimeSpan right) => SubtractInternal(left, right);
+
+    public static bool operator ==(XTimeSpan left, XTimeSpan right) => left.Years == right.Years && left.Months == right.Months && left.TimeSpan == right.TimeSpan;
+
+    public static bool operator ==(TimeSpan left, XTimeSpan right) => (XTimeSpan) left == right;
+
+    public static bool operator ==(XTimeSpan left, TimeSpan right) => left == (XTimeSpan) right;
+
+    public static bool operator !=(XTimeSpan left, XTimeSpan right) => !(left == right);
+
+    public static bool operator !=(TimeSpan left, XTimeSpan right) => !(left == right);
+
+    public static bool operator !=(XTimeSpan left, TimeSpan right) => !(left == right);
+
+    public static bool operator <(XTimeSpan left, XTimeSpan right) => (TimeSpan) left < (TimeSpan) right;
+
+    public static bool operator <(XTimeSpan left, TimeSpan right) => (TimeSpan) left < right;
+
+    public static bool operator <(TimeSpan left, XTimeSpan right) => left < (TimeSpan) right;
+
+    public static bool operator <=(XTimeSpan left, XTimeSpan right) => (TimeSpan) left <= (TimeSpan) right;
+
+    public static bool operator <=(XTimeSpan left, TimeSpan right) => (TimeSpan) left <= right;
+
+    public static bool operator <=(TimeSpan left, XTimeSpan right) => left <= (TimeSpan) right;
+
+    public static bool operator >(XTimeSpan left, XTimeSpan right) => (TimeSpan) left > (TimeSpan) right;
+
+    public static bool operator >(XTimeSpan left, TimeSpan right) => (TimeSpan) left > right;
+
+    public static bool operator >(TimeSpan left, XTimeSpan right) => left > (TimeSpan) right;
+
+    public static bool operator >=(XTimeSpan left, XTimeSpan right) => (TimeSpan) left >= (TimeSpan) right;
+
+    public static bool operator >=(XTimeSpan left, TimeSpan right) => (TimeSpan) left >= right;
+
+    public static bool operator >=(TimeSpan left, XTimeSpan right) => left >= (TimeSpan) right;
+
+    public static implicit operator TimeSpan(XTimeSpan timeSpan)
     {
-        public const int DaysPerYear = 365;
+        var daysFromYears = DaysPerYear * timeSpan.Years;
+        var daysFromMonths = 30 * timeSpan.Months;
+        var days = daysFromMonths + daysFromYears;
+        return new TimeSpan(days, 0, 0, 0) + timeSpan.TimeSpan;
+    }
 
-        public int Months { get; set; }
+    public static implicit operator XTimeSpan(TimeSpan timeSpan) => new XTimeSpan {TimeSpan = timeSpan};
 
-        public int Years { get; set; }
+    public object Clone() =>
+        new XTimeSpan
+            {
+                TimeSpan = TimeSpan,
+                Months = Months,
+                Years = Years
+            };
 
-        public TimeSpan TimeSpan { get; set; }
+    bool IEquatable<XTimeSpan>.Equals(XTimeSpan other) => Equals(other);
 
-        public long Ticks => ((TimeSpan) this).Ticks;
+    public override string ToString() => ((TimeSpan) this).ToString();
 
-        public int Days => ((TimeSpan) this).Days;
-
-        public int Hours => ((TimeSpan) this).Hours;
-
-        public int Milliseconds => ((TimeSpan) this).Milliseconds;
-
-        public int Minutes => ((TimeSpan) this).Minutes;
-
-        public int Seconds => ((TimeSpan) this).Seconds;
-
-        public double TotalDays => ((TimeSpan) this).TotalDays;
-
-        public double TotalHours => ((TimeSpan) this).TotalHours;
-
-        public double TotalMilliseconds => ((TimeSpan) this).TotalMilliseconds;
-
-        public double TotalMinutes => ((TimeSpan) this).TotalMinutes;
-
-        public double TotalSeconds => ((TimeSpan) this).TotalSeconds;
-
-        public XTimeSpan Add(XTimeSpan number) => AddInternal(this, number);
-
-        public XTimeSpan Subtract(XTimeSpan timeSpan) => SubtractInternal(this, timeSpan);
-
-        public static XTimeSpan operator +(XTimeSpan left, XTimeSpan right) => AddInternal(left, right);
-
-        public static XTimeSpan operator +(XTimeSpan left, TimeSpan right) => AddInternal(left, right);
-
-        public static XTimeSpan operator +(TimeSpan left, XTimeSpan right) => AddInternal(left, right);
-
-        public static XTimeSpan operator -(XTimeSpan value) => value.Negate();
-
-        public static XTimeSpan operator -(XTimeSpan left, XTimeSpan right) => SubtractInternal(left, right);
-
-        public static XTimeSpan operator -(TimeSpan left, XTimeSpan right) => SubtractInternal(left, right);
-
-        public static XTimeSpan operator -(XTimeSpan left, TimeSpan right) => SubtractInternal(left, right);
-
-        public static bool operator ==(XTimeSpan left, XTimeSpan right) => left.Years == right.Years && left.Months == right.Months && left.TimeSpan == right.TimeSpan;
-
-        public static bool operator ==(TimeSpan left, XTimeSpan right) => (XTimeSpan) left == right;
-
-        public static bool operator ==(XTimeSpan left, TimeSpan right) => left == (XTimeSpan) right;
-
-        public static bool operator !=(XTimeSpan left, XTimeSpan right) => !(left == right);
-
-        public static bool operator !=(TimeSpan left, XTimeSpan right) => !(left == right);
-
-        public static bool operator !=(XTimeSpan left, TimeSpan right) => !(left == right);
-
-        public static bool operator <(XTimeSpan left, XTimeSpan right) => (TimeSpan) left < (TimeSpan) right;
-
-        public static bool operator <(XTimeSpan left, TimeSpan right) => (TimeSpan) left < right;
-
-        public static bool operator <(TimeSpan left, XTimeSpan right) => left < (TimeSpan) right;
-
-        public static bool operator <=(XTimeSpan left, XTimeSpan right) => (TimeSpan) left <= (TimeSpan) right;
-
-        public static bool operator <=(XTimeSpan left, TimeSpan right) => (TimeSpan) left <= right;
-
-        public static bool operator <=(TimeSpan left, XTimeSpan right) => left <= (TimeSpan) right;
-
-        public static bool operator >(XTimeSpan left, XTimeSpan right) => (TimeSpan) left > (TimeSpan) right;
-
-        public static bool operator >(XTimeSpan left, TimeSpan right) => (TimeSpan) left > right;
-
-        public static bool operator >(TimeSpan left, XTimeSpan right) => left > (TimeSpan) right;
-
-        public static bool operator >=(XTimeSpan left, XTimeSpan right) => (TimeSpan) left >= (TimeSpan) right;
-
-        public static bool operator >=(XTimeSpan left, TimeSpan right) => (TimeSpan) left >= right;
-
-        public static bool operator >=(TimeSpan left, XTimeSpan right) => left >= (TimeSpan) right;
-
-        public static implicit operator TimeSpan(XTimeSpan timeSpan)
+    public override bool Equals(object obj)
+    {
+        if (obj == null)
         {
-            var daysFromYears = DaysPerYear * timeSpan.Years;
-            var daysFromMonths = 30 * timeSpan.Months;
-            var days = daysFromMonths + daysFromYears;
-            return new TimeSpan(days, 0, 0, 0) + timeSpan.TimeSpan;
-        }
-
-        public static implicit operator XTimeSpan(TimeSpan timeSpan) => new XTimeSpan {TimeSpan = timeSpan};
-
-        public object Clone() =>
-            new XTimeSpan
-                {
-                    TimeSpan = TimeSpan,
-                    Months = Months,
-                    Years = Years
-                };
-
-        bool IEquatable<XTimeSpan>.Equals(XTimeSpan other) => Equals(other);
-
-        public override string ToString() => ((TimeSpan) this).ToString();
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            var type = obj.GetType();
-            if (type == typeof(XTimeSpan))
-            {
-                return this == (XTimeSpan) obj;
-            }
-
-            if (type == typeof(TimeSpan))
-            {
-                return this == (TimeSpan) obj;
-            }
-
             return false;
         }
 
-        public override int GetHashCode() => Months.GetHashCode() ^ Years.GetHashCode() ^ TimeSpan.GetHashCode();
-
-        private static XTimeSpan AddInternal(XTimeSpan left, XTimeSpan right) =>
-            new XTimeSpan
-                {
-                    Years = left.Years + right.Years,
-                    Months = left.Months + right.Months,
-                    TimeSpan = left.TimeSpan + right.TimeSpan
-                };
-
-        private static XTimeSpan SubtractInternal(XTimeSpan left, XTimeSpan right) =>
-            new XTimeSpan
-                {
-                    Years = left.Years - right.Years,
-                    Months = left.Months - right.Months,
-                    TimeSpan = left.TimeSpan - right.TimeSpan
-                };
-
-        public int CompareTo(TimeSpan other) => ((TimeSpan) this).CompareTo(other);
-
-        public int CompareTo(object value)
+        var type = obj.GetType();
+        if (type == typeof(XTimeSpan))
         {
-            if (value is TimeSpan span)
-            {
-                return ((TimeSpan) this).CompareTo(span);
-            }
-
-            throw XArgumentException.Create(nameof(value), "Value must be a TimeSpan");
+            return this == (XTimeSpan) obj;
         }
 
-        public int CompareTo(XTimeSpan value) => ((TimeSpan) this).CompareTo(value);
+        if (type == typeof(TimeSpan))
+        {
+            return this == (TimeSpan) obj;
+        }
 
-        public TimeSpan Negate() =>
-            new XTimeSpan
-                {
-                    TimeSpan = -TimeSpan,
-                    Months = -Months,
-                    Years = -Years
-                };
+        return false;
     }
+
+    public override int GetHashCode() => Months.GetHashCode() ^ Years.GetHashCode() ^ TimeSpan.GetHashCode();
+
+    private static XTimeSpan AddInternal(XTimeSpan left, XTimeSpan right) =>
+        new XTimeSpan
+            {
+                Years = left.Years + right.Years,
+                Months = left.Months + right.Months,
+                TimeSpan = left.TimeSpan + right.TimeSpan
+            };
+
+    private static XTimeSpan SubtractInternal(XTimeSpan left, XTimeSpan right) =>
+        new XTimeSpan
+            {
+                Years = left.Years - right.Years,
+                Months = left.Months - right.Months,
+                TimeSpan = left.TimeSpan - right.TimeSpan
+            };
+
+    public int CompareTo(TimeSpan other) => ((TimeSpan) this).CompareTo(other);
+
+    public int CompareTo(object value)
+    {
+        if (value is TimeSpan span)
+        {
+            return ((TimeSpan) this).CompareTo(span);
+        }
+
+        throw XArgumentException.Create(nameof(value), "Value must be a TimeSpan");
+    }
+
+    public int CompareTo(XTimeSpan value) => ((TimeSpan) this).CompareTo(value);
+
+    public TimeSpan Negate() =>
+        new XTimeSpan
+            {
+                TimeSpan = -TimeSpan,
+                Months = -Months,
+                Years = -Years
+            };
 }

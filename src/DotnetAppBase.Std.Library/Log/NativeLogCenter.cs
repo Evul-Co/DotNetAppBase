@@ -30,61 +30,60 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace DotNetAppBase.Std.Library.Log
+namespace DotNetAppBase.Std.Library.Log;
+
+[Localizable(false)]
+public static class NativeLogCenter
 {
-    [Localizable(false)]
-    public static class NativeLogCenter
+    public enum ELogLevel
     {
-        public enum ELogLevel
+        Debug,
+        Error,
+        Fatal,
+        Info,
+        Warn,
+        Profile
+    }
+
+    public static bool EnableDebugger { get; set; }
+
+    public static bool EnableTrace { get; set; }
+
+    public static void Add(Exception exception)
+    {
+        var exceptionMessage = string.Empty;
+
+        ExtractExceptionMessage(exception, ref exceptionMessage, 1);
+
+        Add(ELogLevel.Error, "Exception Catch: {1}{0}", exceptionMessage, Environment.NewLine);
+    }
+
+    public static void Add(ELogLevel level, string message, params object[] args)
+    {
+        if (string.IsNullOrEmpty(message))
         {
-            Debug,
-            Error,
-            Fatal,
-            Info,
-            Warn,
-            Profile
+            message = "NULL";
         }
 
-        public static bool EnableDebugger { get; set; }
+        var fMessage = string.Format(DateTime.Now.ToString(CultureInfo.InvariantCulture) + ": " + message, args);
 
-        public static bool EnableTrace { get; set; }
-
-        public static void Add(Exception exception)
+        if (EnableDebugger)
         {
-            var exceptionMessage = string.Empty;
-
-            ExtractExceptionMessage(exception, ref exceptionMessage, 1);
-
-            Add(ELogLevel.Error, "Exception Catch: {1}{0}", exceptionMessage, Environment.NewLine);
+            Debugger.Log((int) level, level.ToString(), fMessage);
         }
 
-        public static void Add(ELogLevel level, string message, params object[] args)
+        if (EnableTrace)
         {
-            if (string.IsNullOrEmpty(message))
-            {
-                message = "NULL";
-            }
-
-            var fMessage = string.Format(DateTime.Now.ToString(CultureInfo.InvariantCulture) + ": " + message, args);
-
-            if (EnableDebugger)
-            {
-                Debugger.Log((int) level, level.ToString(), fMessage);
-            }
-
-            if (EnableTrace)
-            {
-                Trace.WriteLine(fMessage, level.ToString());
-            }
+            Trace.WriteLine(fMessage, level.ToString());
         }
+    }
 
-        private static void ExtractExceptionMessage(Exception exception, ref string outMessage, byte level)
+    private static void ExtractExceptionMessage(Exception exception, ref string outMessage, byte level)
+    {
+        outMessage += $"Level ({level}): {exception.Message}{Environment.NewLine}";
+        if (exception.InnerException != null)
         {
-            outMessage += $"Level ({level}): {exception.Message}{Environment.NewLine}";
-            if (exception.InnerException != null)
-            {
-                ExtractExceptionMessage(exception.InnerException, ref outMessage, (byte) (level + 1));
-            }
+            ExtractExceptionMessage(exception.InnerException, ref outMessage, (byte) (level + 1));
         }
     }
 }

@@ -29,46 +29,45 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 
-namespace DotNetAppBase.Std.Db.Work
+namespace DotNetAppBase.Std.Db.Work;
+
+public class DbCollection<T> : BindingList<T> where T : DbEntity, new()
 {
-    public class DbCollection<T> : BindingList<T> where T : DbEntity, new()
+    public DbCollection() { }
+
+    public DbCollection(DataTable table)
     {
-        public DbCollection() { }
+        Load(table);
+    }
 
-        public DbCollection(DataTable table)
+    public void Load(DataTable table, bool clearAll = true)
+    {
+        RaiseListChangedEvents = false;
+        try
         {
-            Load(table);
+            if (clearAll)
+            {
+                Clear();
+            }
+
+            if (table == null)
+            {
+                return;
+            }
+
+            foreach (var row in table.Rows.Cast<DataRow>())
+            {
+                var entity = new T();
+                entity.Update(row);
+
+                Add(entity);
+            }
         }
-
-        public void Load(DataTable table, bool clearAll = true)
+        finally
         {
-            RaiseListChangedEvents = false;
-            try
-            {
-                if (clearAll)
-                {
-                    Clear();
-                }
+            RaiseListChangedEvents = true;
 
-                if (table == null)
-                {
-                    return;
-                }
-
-                foreach (var row in table.Rows.Cast<DataRow>())
-                {
-                    var entity = new T();
-                    entity.Update(row);
-
-                    Add(entity);
-                }
-            }
-            finally
-            {
-                RaiseListChangedEvents = true;
-
-                ResetBindings();
-            }
+            ResetBindings();
         }
     }
 }

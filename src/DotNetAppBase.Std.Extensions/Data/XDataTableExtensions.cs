@@ -83,19 +83,17 @@ public static class XDataTableExtensions
 
         var data = emptyDataSet;
 
-        using (var con = new OleDbConnection(connectionString))
+        using var con = new OleDbConnection(connectionString);
+        con.Open();
+
+        foreach (var sheetName in GetExcelSheetNames(con))
         {
-            con.Open();
+            var dataTable = new DataTable();
+            var query = $"SELECT * FROM [{sheetName}]";
 
-            foreach (var sheetName in GetExcelSheetNames(con))
-            {
-                var dataTable = new DataTable();
-                var query = $"SELECT * FROM [{sheetName}]";
-
-                var adapter = new OleDbDataAdapter(query, con);
-                adapter.Fill(dataTable);
-                data.Tables.Add(dataTable);
-            }
+            var adapter = new OleDbDataAdapter(query, con);
+            adapter.Fill(dataTable);
+            data.Tables.Add(dataTable);
         }
 
         return data;

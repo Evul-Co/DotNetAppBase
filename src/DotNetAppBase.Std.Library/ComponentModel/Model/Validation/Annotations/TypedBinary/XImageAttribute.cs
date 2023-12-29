@@ -28,35 +28,34 @@
 using System;
 using DotNetAppBase.Std.Library.Properties;
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.TypedBinary
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.TypedBinary;
+
+public class XImageAttribute : XValidationAttribute
 {
-    public class XImageAttribute : XValidationAttribute
+    private readonly long _maxLength;
+
+    public XImageAttribute(long maxLength)
+        : base(
+            EDataType.Custom,
+            EValidationMode.Custom,
+            // ReSharper disable LocalizableElement
+            string.Format(DbMessages.XImageAttribute_XImageAttribute_A_imagem_associada_ao_campo__0__não_pode_ser_maior_que__1__MB_, "{0}", XHelper.DisplayFormat.Binary.ByteToMegabyte(maxLength)))
+    // ReSharper restore LocalizableElement
     {
-        private readonly long _maxLength;
+        _maxLength = maxLength;
+    }
 
-        public XImageAttribute(long maxLength)
-            : base(
-                EDataType.Custom,
-                EValidationMode.Custom,
-                // ReSharper disable LocalizableElement
-                string.Format(DbMessages.XImageAttribute_XImageAttribute_A_imagem_associada_ao_campo__0__não_pode_ser_maior_que__1__MB_, "{0}", XHelper.DisplayFormat.Binary.ByteToMegabyte(maxLength)))
-        // ReSharper restore LocalizableElement
+    public override string Mask => null;
+
+    protected override bool InternalIsValid(object value)
+    {
+        var data = value.As<byte[]>();
+
+        if (data == null)
         {
-            _maxLength = maxLength;
+            return true;
         }
 
-        public override string Mask => null;
-
-        protected override bool InternalIsValid(object value)
-        {
-            var data = value.As<byte[]>();
-
-            if (data == null)
-            {
-                return true;
-            }
-
-            return data.LongLength <= _maxLength;
-        }
+        return data.LongLength <= _maxLength;
     }
 }

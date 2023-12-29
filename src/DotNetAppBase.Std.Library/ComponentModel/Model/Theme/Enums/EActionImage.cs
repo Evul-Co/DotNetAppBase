@@ -25,62 +25,61 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Theme.Enums
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Theme.Enums;
+
+public enum EActionImage
 {
-    public enum EActionImage
-    {
-        None,
+    None,
 
-        Apply,
-        Cancel,
-        Save,
-        Close,
+    Apply,
+    Cancel,
+    Save,
+    Close,
 
-        Insert,
-        Edit,
-        Delete,
+    Insert,
+    Edit,
+    Delete,
 
-        Refresh,
+    Refresh,
 
-        Find,
-        Filter,
+    Find,
+    Filter,
 
-        Download,
+    Download,
 
-        Open,
-        LoadFrom,
+    Open,
+    LoadFrom,
 
-        Gear,
-        Gears,
+    Gear,
+    Gears,
 
-        Design,
-        Print,
-        PrintPreview,
-        PageSetup,
-        Window,
-        Grid,
-        History,
-        Copy,
+    Design,
+    Print,
+    PrintPreview,
+    PageSetup,
+    Window,
+    Grid,
+    History,
+    Copy,
 
-        Up,
-        Down,
-        Backward,
-        Forward,
+    Up,
+    Down,
+    Backward,
+    Forward,
 
-        Sync,
+    Sync,
 
-        ExpandAll,
-        CollapseAll,
+    ExpandAll,
+    CollapseAll,
 
-        Play,
-        Pause,
-        Stop,
+    Play,
+    Pause,
+    Stop,
 
-        Shutdown,
-        Lock,
-        Unlock,
+    Shutdown,
+    Lock,
+    Unlock,
 
-        Import,
-        ViewDocument
-    }
+    Import,
+    ViewDocument
 }

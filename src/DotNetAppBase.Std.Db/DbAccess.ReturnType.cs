@@ -25,27 +25,26 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Db
+namespace DotNetAppBase.Std.Db;
+
+public partial class DbAccess
 {
-    public partial class DbAccess
+    public enum EReturnType
     {
-        public enum EReturnType
-        {
-            Unknown,
+        Unknown,
 
-            DataSet,
+        DataSet,
 
-            DataTable,
+        DataTable,
 
-            DataRow,
+        DataRow,
 
-            DataReader,
+        DataReader,
 
-            Count,
+        Count,
 
-            ProcReturn,
+        ProcReturn,
 
-            ProcReturnAndValue
-        }
+        ProcReturnAndValue
     }
 }

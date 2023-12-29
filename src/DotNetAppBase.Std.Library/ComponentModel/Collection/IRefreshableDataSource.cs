@@ -25,10 +25,9 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Collection
+namespace DotNetAppBase.Std.Library.ComponentModel.Collection;
+
+public interface IRefreshableDataSource
 {
-    public interface IRefreshableDataSource
-    {
-        bool Refresh();
-    }
+    bool Refresh();
 }

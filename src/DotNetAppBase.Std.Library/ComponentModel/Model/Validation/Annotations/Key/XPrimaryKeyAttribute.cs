@@ -25,12 +25,11 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.Key
-{
-    public class XPrimaryKeyAttribute : XDataTypeAttribute
-    {
-        public XPrimaryKeyAttribute() : base(EDataType.PrimaryKey) { }
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.Key;
 
-        protected override bool InternalIsValid(object value) => true;
-    }
+public class XPrimaryKeyAttribute : XDataTypeAttribute
+{
+    public XPrimaryKeyAttribute() : base(EDataType.PrimaryKey) { }
+
+    protected override bool InternalIsValid(object value) => true;
 }

@@ -25,14 +25,13 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Svc.Enums
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Svc.Enums;
+
+public enum EResultStatus : byte
 {
-    public enum EResultStatus : byte
-    {
-        Error = 0,
+    Error = 0,
 
-        Warning = 2,
+    Warning = 2,
 
-        Ok = 3
-    }
+    Ok = 3
 }

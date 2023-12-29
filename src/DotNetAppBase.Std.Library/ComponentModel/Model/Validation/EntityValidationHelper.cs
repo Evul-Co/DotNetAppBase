@@ -34,292 +34,291 @@ using System.Linq.Expressions;
 using DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Enums;
 using DotNetAppBase.Std.Library.ComponentModel.Types;
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation;
+
+public class EntityValidationHelper<TEntity>
 {
-    public class EntityValidationHelper<TEntity>
+    private readonly object _syncValidations = new object();
+
+    public EntityValidationHelper()
     {
-        private readonly object _syncValidations = new object();
+        TypeDescriptor = XTypeDescriptor.Get<TEntity>();
 
-        public EntityValidationHelper()
-        {
-            TypeDescriptor = XTypeDescriptor.Get<TEntity>();
+        Validations = new List<ValidationResult>();
+    }
 
-            Validations = new List<ValidationResult>();
-        }
+    public TEntity Current { get; private set; }
 
-        public TEntity Current { get; private set; }
-
-        public bool HasViolations
-        {
-            get
-            {
-                lock (_syncValidations)
-                {
-                    return Validations.Any();
-                }
-            }
-        }
-
-        public XTypeDescriptor TypeDescriptor { get; }
-
-        public List<ValidationResult> Validations { get; }
-
-        public EntityValidationHelper<TEntity> AddValidationResult(ValidationResult validationResult)
+    public bool HasViolations
+    {
+        get
         {
             lock (_syncValidations)
             {
-                Validations.Add(validationResult);
-            }
-
-            return this;
-        }
-
-        public EntityValidationHelper<TEntity> AddValidationsResult(IEnumerable<ValidationResult> validationResult)
-        {
-            lock (_syncValidations)
-            {
-                Validations.AddRange(validationResult);
-            }
-
-            return this;
-        }
-
-        public EntityValidationHelper<TEntity> AddValidationsResult(EntityValidationResult entityValidationResult) => AddValidationsResult(entityValidationResult.Validations);
-
-        public void Begin(TEntity entity)
-        {
-            lock (_syncValidations)
-            {
-                Validations.Clear();
-                Current = entity;
+                return Validations.Any();
             }
         }
+    }
 
-        public EntityValidationResult End()
+    public XTypeDescriptor TypeDescriptor { get; }
+
+    public List<ValidationResult> Validations { get; }
+
+    public EntityValidationHelper<TEntity> AddValidationResult(ValidationResult validationResult)
+    {
+        lock (_syncValidations)
         {
-            lock (_syncValidations)
-            {
-                var result = new EntityValidationResult(Validations.ToArray());
-
-                Validations.Clear();
-
-                return result;
-            }
+            Validations.Add(validationResult);
         }
 
-        public EntityValidationHelper<TEntity> IfNoViolationsValidate(
-            Expression<Func<TEntity, object>> memberExpression,
-            Func<TEntity, bool> conditional,
-            string errorMessage,
-            bool format = true,
-            EValidationKind validationKind = EValidationKind.Error)
+        return this;
+    }
+
+    public EntityValidationHelper<TEntity> AddValidationsResult(IEnumerable<ValidationResult> validationResult)
+    {
+        lock (_syncValidations)
         {
-            lock (_syncValidations)
-            {
-                return HasViolations ? this : Validate(memberExpression, conditional, errorMessage, format, validationKind);
-            }
+            Validations.AddRange(validationResult);
         }
 
-        public EntityValidationHelper<TEntity> IfNoViolationsValidate<TConditionalValue>(
-            Expression<Func<TEntity, TConditionalValue>> memberExpression,
-            Func<TEntity, TConditionalValue> calculateConditionalValue,
-            Func<TEntity, TConditionalValue, bool> conditional,
-            string errorMessage,
-            bool format = true,
-            EValidationKind validationKind = EValidationKind.Error)
+        return this;
+    }
+
+    public EntityValidationHelper<TEntity> AddValidationsResult(EntityValidationResult entityValidationResult) => AddValidationsResult(entityValidationResult.Validations);
+
+    public void Begin(TEntity entity)
+    {
+        lock (_syncValidations)
         {
-            lock (_syncValidations)
-            {
-                return HasViolations ? this : Validate(memberExpression, calculateConditionalValue, conditional, errorMessage, format, validationKind);
-            }
+            Validations.Clear();
+            Current = entity;
         }
+    }
 
-        public EntityValidationHelper<TEntity> IfNoViolationsValidateComplex(
-            Expression<Func<TEntity, object>> memberExpression,
-            Func<TEntity, bool> conditional = null)
+    public EntityValidationResult End()
+    {
+        lock (_syncValidations)
         {
-            lock (_syncValidations)
-            {
-                if (HasViolations)
-                {
-                    return this;
-                }
+            var result = new EntityValidationResult(Validations.ToArray());
 
-                return ValidateComplex(memberExpression, conditional);
-            }
+            Validations.Clear();
+
+            return result;
         }
+    }
 
-        public EntityValidationHelper<TEntity> IfNoViolationsValidateComplex(
-            Expression<Func<TEntity, object>> memberExpression,
-            Func<TEntity, bool> conditional,
-            Func<TEntity, EntityValidationResult> validation)
+    public EntityValidationHelper<TEntity> IfNoViolationsValidate(
+        Expression<Func<TEntity, object>> memberExpression,
+        Func<TEntity, bool> conditional,
+        string errorMessage,
+        bool format = true,
+        EValidationKind validationKind = EValidationKind.Error)
+    {
+        lock (_syncValidations)
         {
-            lock (_syncValidations)
-            {
-                if (HasViolations)
-                {
-                    return this;
-                }
-
-                return ValidateComplex(memberExpression, conditional, validation);
-            }
+            return HasViolations ? this : Validate(memberExpression, conditional, errorMessage, format, validationKind);
         }
+    }
 
-        public EntityValidationHelper<TEntity> Validate(
-            Expression<Func<TEntity, object>> memberExpression,
-            Func<TEntity, bool> conditional,
-            string errorMessage,
-            bool format = true,
-            EValidationKind validationKind = EValidationKind.Error)
+    public EntityValidationHelper<TEntity> IfNoViolationsValidate<TConditionalValue>(
+        Expression<Func<TEntity, TConditionalValue>> memberExpression,
+        Func<TEntity, TConditionalValue> calculateConditionalValue,
+        Func<TEntity, TConditionalValue, bool> conditional,
+        string errorMessage,
+        bool format = true,
+        EValidationKind validationKind = EValidationKind.Error)
+    {
+        lock (_syncValidations)
         {
-            lock (_syncValidations)
+            return HasViolations ? this : Validate(memberExpression, calculateConditionalValue, conditional, errorMessage, format, validationKind);
+        }
+    }
+
+    public EntityValidationHelper<TEntity> IfNoViolationsValidateComplex(
+        Expression<Func<TEntity, object>> memberExpression,
+        Func<TEntity, bool> conditional = null)
+    {
+        lock (_syncValidations)
+        {
+            if (HasViolations)
             {
-                if (!conditional(Current))
-                {
-                    return this;
-                }
-
-                var member = XHelper.Expressions.GetMemberName(memberExpression);
-                var displayPropertyValue = TypeDescriptor.GetModelDisplayName(Current);
-
-                Validations.Add(
-                    CreateValidation(
-                        validationKind,
-                        format
-                            ? string.Format(errorMessage, TypeDescriptor.GetPropertyDisplayName(member, false), displayPropertyValue)
-                            : errorMessage));
-
                 return this;
             }
+
+            return ValidateComplex(memberExpression, conditional);
         }
+    }
 
-        public EntityValidationHelper<TEntity> Validate<TConditionalValue>(
-            Expression<Func<TEntity, TConditionalValue>> memberExpression,
-            Func<TEntity, TConditionalValue> calculateConditionalValue,
-            Func<TEntity, TConditionalValue, bool> conditional,
-            string errorMessage,
-            bool format = true,
-            EValidationKind validationKind = EValidationKind.Error) =>
-            Validate(
-                memberExpression,
-                null,
-                calculateConditionalValue,
-                conditional,
-                errorMessage,
-                format,
-                validationKind);
-
-        public EntityValidationHelper<TEntity> Validate<TConditionalValue>(
-            Expression<Func<TEntity, TConditionalValue>> memberExpression,
-            Func<TEntity, bool> conditionalToCheck,
-            Func<TEntity, TConditionalValue> calculateConditionalValue,
-            Func<TEntity, TConditionalValue, bool> conditional,
-            string errorMessage,
-            bool format = true,
-            EValidationKind validationKind = EValidationKind.Error)
+    public EntityValidationHelper<TEntity> IfNoViolationsValidateComplex(
+        Expression<Func<TEntity, object>> memberExpression,
+        Func<TEntity, bool> conditional,
+        Func<TEntity, EntityValidationResult> validation)
+    {
+        lock (_syncValidations)
         {
-            lock (_syncValidations)
+            if (HasViolations)
             {
-                if (!(conditionalToCheck?.Invoke(Current) ?? true))
-                {
-                    return this;
-                }
+                return this;
+            }
 
-                var conditionalValue = calculateConditionalValue(Current);
-                if (!conditional(Current, conditionalValue))
-                {
-                    return this;
-                }
+            return ValidateComplex(memberExpression, conditional, validation);
+        }
+    }
 
-                var member = XHelper.Expressions.GetMemberName(memberExpression);
-                var displayPropertyValue = TypeDescriptor.GetModelDisplayName(Current);
+    public EntityValidationHelper<TEntity> Validate(
+        Expression<Func<TEntity, object>> memberExpression,
+        Func<TEntity, bool> conditional,
+        string errorMessage,
+        bool format = true,
+        EValidationKind validationKind = EValidationKind.Error)
+    {
+        lock (_syncValidations)
+        {
+            if (!conditional(Current))
+            {
+                return this;
+            }
 
-                Validations.Add(CreateValidation(
+            var member = XHelper.Expressions.GetMemberName(memberExpression);
+            var displayPropertyValue = TypeDescriptor.GetModelDisplayName(Current);
+
+            Validations.Add(
+                CreateValidation(
                     validationKind,
                     format
-                        ? string.Format(errorMessage, TypeDescriptor.GetPropertyDisplayName(member, false), conditionalValue, displayPropertyValue)
+                        ? string.Format(errorMessage, TypeDescriptor.GetPropertyDisplayName(member, false), displayPropertyValue)
                         : errorMessage));
 
+            return this;
+        }
+    }
+
+    public EntityValidationHelper<TEntity> Validate<TConditionalValue>(
+        Expression<Func<TEntity, TConditionalValue>> memberExpression,
+        Func<TEntity, TConditionalValue> calculateConditionalValue,
+        Func<TEntity, TConditionalValue, bool> conditional,
+        string errorMessage,
+        bool format = true,
+        EValidationKind validationKind = EValidationKind.Error) =>
+        Validate(
+            memberExpression,
+            null,
+            calculateConditionalValue,
+            conditional,
+            errorMessage,
+            format,
+            validationKind);
+
+    public EntityValidationHelper<TEntity> Validate<TConditionalValue>(
+        Expression<Func<TEntity, TConditionalValue>> memberExpression,
+        Func<TEntity, bool> conditionalToCheck,
+        Func<TEntity, TConditionalValue> calculateConditionalValue,
+        Func<TEntity, TConditionalValue, bool> conditional,
+        string errorMessage,
+        bool format = true,
+        EValidationKind validationKind = EValidationKind.Error)
+    {
+        lock (_syncValidations)
+        {
+            if (!(conditionalToCheck?.Invoke(Current) ?? true))
+            {
                 return this;
             }
-        }
 
-        public EntityValidationHelper<TEntity> ValidateComplex(
-            Expression<Func<TEntity, object>> memberExpression,
-            Func<TEntity, bool> conditional = null)
-        {
-            lock (_syncValidations)
+            var conditionalValue = calculateConditionalValue(Current);
+            if (!conditional(Current, conditionalValue))
             {
-                if (conditional != null && !conditional(Current))
-                {
-                    return this;
-                }
-
-                var complexValue = XHelper.Expressions.GetMemberValue(memberExpression, Current);
-
-                EntityValidator.Validate(complexValue, Validations);
+                return this;
             }
+
+            var member = XHelper.Expressions.GetMemberName(memberExpression);
+            var displayPropertyValue = TypeDescriptor.GetModelDisplayName(Current);
+
+            Validations.Add(CreateValidation(
+                validationKind,
+                format
+                    ? string.Format(errorMessage, TypeDescriptor.GetPropertyDisplayName(member, false), conditionalValue, displayPropertyValue)
+                    : errorMessage));
 
             return this;
         }
+    }
 
-        public EntityValidationHelper<TEntity> ValidateComplex(
-            Expression<Func<TEntity, object>> memberExpression,
-            Func<TEntity, bool> conditional,
-            Func<TEntity, EntityValidationResult> validation)
+    public EntityValidationHelper<TEntity> ValidateComplex(
+        Expression<Func<TEntity, object>> memberExpression,
+        Func<TEntity, bool> conditional = null)
+    {
+        lock (_syncValidations)
         {
-            lock (_syncValidations)
+            if (conditional != null && !conditional(Current))
             {
-                if (!conditional(Current))
-                {
-                    return this;
-                }
-
-                var result = validation(Current) ?? EntityValidationResult.Empty;
-
-                Validations.AddRange(result.Validations);
+                return this;
             }
 
-            return this;
+            var complexValue = XHelper.Expressions.GetMemberValue(memberExpression, Current);
+
+            EntityValidator.Validate(complexValue, Validations);
         }
 
-        public EntityValidationHelper<TEntity> ValidateMany(
-            Expression<Func<TEntity, IEnumerable>> memberExpression,
-            Func<TEntity, bool> conditional = null)
-        {
-            lock (_syncValidations)
-            {
-                if (conditional != null && !conditional(Current))
-                {
-                    return this;
-                }
+        return this;
+    }
 
-                var many = XHelper.Expressions.GetMemberValue(memberExpression, Current);
-                foreach (var one in many)
-                {
-                    if (!EntityValidator.Validate(one, Validations))
-                    {
-                        break;
-                    }
-                }
+    public EntityValidationHelper<TEntity> ValidateComplex(
+        Expression<Func<TEntity, object>> memberExpression,
+        Func<TEntity, bool> conditional,
+        Func<TEntity, EntityValidationResult> validation)
+    {
+        lock (_syncValidations)
+        {
+            if (!conditional(Current))
+            {
+                return this;
             }
 
-            return this;
+            var result = validation(Current) ?? EntityValidationResult.Empty;
+
+            Validations.AddRange(result.Validations);
         }
 
-        private ValidationResult CreateValidation(EValidationKind validationKind, string message)
+        return this;
+    }
+
+    public EntityValidationHelper<TEntity> ValidateMany(
+        Expression<Func<TEntity, IEnumerable>> memberExpression,
+        Func<TEntity, bool> conditional = null)
+    {
+        lock (_syncValidations)
         {
-            switch (validationKind)
+            if (conditional != null && !conditional(Current))
             {
-                case EValidationKind.Error:
-                    return new ValidationResult(message);
-
-                case EValidationKind.Warning:
-                    return new WarningValidationResult(message);
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(validationKind));
+                return this;
             }
+
+            var many = XHelper.Expressions.GetMemberValue(memberExpression, Current);
+            foreach (var one in many)
+            {
+                if (!EntityValidator.Validate(one, Validations))
+                {
+                    break;
+                }
+            }
+        }
+
+        return this;
+    }
+
+    private ValidationResult CreateValidation(EValidationKind validationKind, string message)
+    {
+        switch (validationKind)
+        {
+            case EValidationKind.Error:
+                return new ValidationResult(message);
+
+            case EValidationKind.Warning:
+                return new WarningValidationResult(message);
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(validationKind));
         }
     }
 }

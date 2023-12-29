@@ -30,52 +30,51 @@ using System.Collections.Generic;
 using System.Linq;
 using DotNetAppBase.Std.Db.Contract;
 
-namespace DotNetAppBase.Std.Db
+namespace DotNetAppBase.Std.Db;
+
+public sealed class DbStorage : IDbStorage
 {
-    public sealed class DbStorage : IDbStorage
+    public static readonly DbStorage Instance;
+
+    private readonly Dictionary<string, IDbDatabase> _dbs;
+
+    static DbStorage()
     {
-        public static readonly DbStorage Instance;
+        Instance = new DbStorage();
+    }
 
-        private readonly Dictionary<string, IDbDatabase> _dbs;
+    private DbStorage()
+    {
+        _dbs = new Dictionary<string, IDbDatabase>();
+    }
 
-        static DbStorage()
+    public IDbDatabase DefaultDatabase { get; set; }
+
+    public bool Constains(string name) => !string.IsNullOrEmpty(name) && _dbs.ContainsKey(name);
+
+    public IDbDatabase Restore(string name) => Constains(name) ? _dbs[name] : null;
+
+    public bool Storage(IDbDatabase database)
+    {
+        if (Constains(database.Name))
         {
-            Instance = new DbStorage();
+            return false;
         }
 
-        private DbStorage()
+        _dbs.Add(database.Name, database);
+
+        return true;
+    }
+
+    public bool UnStorage(DbDatabase dataBase)
+    {
+        if (!Constains(dataBase.Name) || Restore(dataBase.Name) != dataBase)
         {
-            _dbs = new Dictionary<string, IDbDatabase>();
+            return false;
         }
 
-        public IDbDatabase DefaultDatabase { get; set; }
+        _dbs.Remove(dataBase.Name);
 
-        public bool Constains(string name) => !string.IsNullOrEmpty(name) && _dbs.ContainsKey(name);
-
-        public IDbDatabase Restore(string name) => Constains(name) ? _dbs[name] : null;
-
-        public bool Storage(IDbDatabase database)
-        {
-            if (Constains(database.Name))
-            {
-                return false;
-            }
-
-            _dbs.Add(database.Name, database);
-
-            return true;
-        }
-
-        public bool UnStorage(DbDatabase dataBase)
-        {
-            if (!Constains(dataBase.Name) || Restore(dataBase.Name) != dataBase)
-            {
-                return false;
-            }
-
-            _dbs.Remove(dataBase.Name);
-
-            return true;
-        }
+        return true;
     }
 }

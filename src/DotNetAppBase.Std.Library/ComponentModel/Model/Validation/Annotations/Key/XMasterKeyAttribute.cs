@@ -25,10 +25,9 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.Key
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.Key;
+
+public class XMasterKeyAttribute : XRequiredAttribute
 {
-    public class XMasterKeyAttribute : XRequiredAttribute
-    {
-        public override bool Enabled => false;
-    }
+    public override bool Enabled => false;
 }

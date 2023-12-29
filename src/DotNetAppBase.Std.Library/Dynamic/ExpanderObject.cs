@@ -29,40 +29,39 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 
-namespace DotNetAppBase.Std.Library.Dynamic
+namespace DotNetAppBase.Std.Library.Dynamic;
+
+public class ExpanderObject : DynamicObject
 {
-    public class ExpanderObject : DynamicObject
+    public Dictionary<string, object> ObjectDictionary;
+
+    public ExpanderObject()
     {
-        public Dictionary<string, object> ObjectDictionary;
+        ObjectDictionary = new Dictionary<string, object>();
+    }
 
-        public ExpanderObject()
+    public override bool TryGetMember(GetMemberBinder binder, out object result)
+    {
+        if (ObjectDictionary.TryGetValue(binder.Name, out var val))
         {
-            ObjectDictionary = new Dictionary<string, object>();
-        }
-
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            if (ObjectDictionary.TryGetValue(binder.Name, out var val))
-            {
-                result = val;
-                return true;
-            }
-
-            result = null;
+            result = val;
             return true;
         }
 
-        public override bool TrySetMember(SetMemberBinder binder, object value)
+        result = null;
+        return true;
+    }
+
+    public override bool TrySetMember(SetMemberBinder binder, object value)
+    {
+        try
         {
-            try
-            {
-                ObjectDictionary[binder.Name] = value;
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            ObjectDictionary[binder.Name] = value;
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 }

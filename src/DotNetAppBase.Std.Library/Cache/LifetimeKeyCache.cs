@@ -29,103 +29,102 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DotNetAppBase.Std.Library.Cache
+namespace DotNetAppBase.Std.Library.Cache;
+
+public class LifetimeKeyCache
 {
-    public class LifetimeKeyCache
+    public class Item<TValue>
     {
-        public class Item<TValue>
+        private long? _lifetime;
+
+        public Item(TValue value, long? lifetime = null)
         {
-            private long? _lifetime;
+            Value = value;
+            _lifetime = lifetime;
+        }
 
-            public Item(TValue value, long? lifetime = null)
+        public long Lifetime
+        {
+            get => _lifetime ?? 0;
+            internal set => _lifetime = value;
+        }
+
+        public TValue Value { get; }
+
+        internal DateTime Cached { get; set; }
+
+        internal bool IsNullLifetime => _lifetime == null;
+    }
+}
+
+public class LifetimeKeyCache<TKey, TValue> : LifetimeKeyCache
+{
+    private readonly Dictionary<TKey, Item<TValue>> _data;
+    private readonly long? _defaultLifetime;
+    private readonly Func<TKey, Item<TValue>> _funcCreate;
+    private readonly object _sync = new object();
+
+    public LifetimeKeyCache(Func<TKey, Item<TValue>> funcCreate, long? defaultLifetime = null)
+    {
+        _funcCreate = funcCreate;
+        _defaultLifetime = defaultLifetime;
+
+        _data = new Dictionary<TKey, Item<TValue>>();
+    }
+
+    public IEnumerable<TValue> Values
+    {
+        get
+        {
+            lock (_sync)
             {
-                Value = value;
-                _lifetime = lifetime;
+                return _data.Values.Select(item => item.Value);
             }
-
-            public long Lifetime
-            {
-                get => _lifetime ?? 0;
-                internal set => _lifetime = value;
-            }
-
-            public TValue Value { get; }
-
-            internal DateTime Cached { get; set; }
-
-            internal bool IsNullLifetime => _lifetime == null;
         }
     }
 
-    public class LifetimeKeyCache<TKey, TValue> : LifetimeKeyCache
+    public void Clear()
     {
-        private readonly Dictionary<TKey, Item<TValue>> _data;
-        private readonly long? _defaultLifetime;
-        private readonly Func<TKey, Item<TValue>> _funcCreate;
-        private readonly object _sync = new object();
-
-        public LifetimeKeyCache(Func<TKey, Item<TValue>> funcCreate, long? defaultLifetime = null)
+        lock (_sync)
         {
-            _funcCreate = funcCreate;
-            _defaultLifetime = defaultLifetime;
-
-            _data = new Dictionary<TKey, Item<TValue>>();
+            _data.Clear();
         }
+    }
 
-        public IEnumerable<TValue> Values
+    public TValue Get(TKey key)
+    {
+        lock (_sync)
         {
-            get
+            var now = DateTime.Now;
+
+            if (_data.TryGetValue(key, out var item))
             {
-                lock (_sync)
+                if (!item.IsNullLifetime && item.Cached.AddMilliseconds(item.Lifetime) < now)
                 {
-                    return _data.Values.Select(item => item.Value);
+                    _data.Remove(key);
+                }
+                else
+                {
+                    return item.Value;
                 }
             }
-        }
 
-        public void Clear()
-        {
-            lock (_sync)
+            item = _funcCreate(key);
+            if (item == null)
             {
-                _data.Clear();
+                return default;
             }
-        }
 
-        public TValue Get(TKey key)
-        {
-            lock (_sync)
+            item.Cached = now;
+
+            if (item.IsNullLifetime && _defaultLifetime != null)
             {
-                var now = DateTime.Now;
-
-                if (_data.TryGetValue(key, out var item))
-                {
-                    if (!item.IsNullLifetime && item.Cached.AddMilliseconds(item.Lifetime) < now)
-                    {
-                        _data.Remove(key);
-                    }
-                    else
-                    {
-                        return item.Value;
-                    }
-                }
-
-                item = _funcCreate(key);
-                if (item == null)
-                {
-                    return default;
-                }
-
-                item.Cached = now;
-
-                if (item.IsNullLifetime && _defaultLifetime != null)
-                {
-                    item.Lifetime = _defaultLifetime.Value;
-                }
-
-                _data.Add(key, item);
-
-                return item.Value;
+                item.Lifetime = _defaultLifetime.Value;
             }
+
+            _data.Add(key, item);
+
+            return item.Value;
         }
     }
 }

@@ -41,302 +41,293 @@ using Microsoft.Data.SqlClient;
 
 // ReSharper disable UnusedMember.Global
 
-namespace DotNetAppBase.Std.Db.Work
+namespace DotNetAppBase.Std.Db.Work;
+
+[Localizable(false)]
+public class DbWorker
 {
-    [Localizable(false)]
-    public class DbWorker
+    private static string _connectionString;
+
+    private readonly string _myConnectionString;
+
+    public DbWorker(int? usuID = null)
     {
-        private static string _connectionString;
+        _myConnectionString = _connectionString.Replace("{usuID}", usuID == null ? string.Empty : $"_USUID_{usuID.Value}");
+    }
 
-        private readonly string _myConnectionString;
+    public Task<DbCollection<TModel>> AsyncCollectionSp<TModel>(string storedProc, params SqlParameter[] parameters) where TModel : DbEntity, new()
+    {
+        return Task.Run(() => CollectionSp<TModel>(storedProc, parameters));
+    }
 
-        public DbWorker(int? usuID = null)
+    public Task<DataSet> AsyncDataSetSp(string storedProc, params SqlParameter[] parameters)
+    {
+        return Task.Run(() => DataSetSp(storedProc, parameters));
+    }
+
+    public Task<TModel> AsyncEntitySp<TModel>(string storedProc, params SqlParameter[] parameters) where TModel : DbEntity, new()
+    {
+        return Task.Run(() => EntitySp<TModel>(storedProc, parameters));
+    }
+
+    public DbCollection<TModel> Collection<TModel>(string commandText, params SqlParameter[] parameters) where TModel : DbEntity, new()
+    {
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
+
+        comm.CommandText = commandText;
+        comm.Parameters.AddRange(parameters);
+
+        var table = new DataTable();
+
+        using (var adapter = new SqlDataAdapter(comm))
         {
-            _myConnectionString = _connectionString.Replace("{usuID}", usuID == null ? string.Empty : $"_USUID_{usuID.Value}");
+            adapter.Fill(table);
         }
 
-        public Task<DbCollection<TModel>> AsyncCollectionSp<TModel>(string storedProc, params SqlParameter[] parameters) where TModel : DbEntity, new()
+        return new DbCollection<TModel>(table);
+    }
+
+    public DbCollection<TModel> CollectionSp<TModel>(string storedProc, params SqlParameter[] parameters) where TModel : DbEntity, new()
+    {
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
+
+        comm.CommandText = storedProc;
+        comm.CommandType = CommandType.StoredProcedure;
+
+        comm.Parameters.AddRange(parameters);
+
+        var table = new DataTable();
+
+        using (var adapter = new SqlDataAdapter(comm))
         {
-            return Task.Run(() => CollectionSp<TModel>(storedProc, parameters));
+            adapter.Fill(table);
         }
 
-        public Task<DataSet> AsyncDataSetSp(string storedProc, params SqlParameter[] parameters)
+        return new DbCollection<TModel>(table);
+    }
+
+    public static void Configure(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    public void DataReader(string commandText, Action<DbDataReader> processAction, params SqlParameter[] parameters)
+    {
+        if (processAction == null)
         {
-            return Task.Run(() => DataSetSp(storedProc, parameters));
+            throw new ArgumentNullException(nameof(processAction));
         }
 
-        public Task<TModel> AsyncEntitySp<TModel>(string storedProc, params SqlParameter[] parameters) where TModel : DbEntity, new()
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        comm.CommandText = commandText;
+        comm.Parameters.AddRange(parameters);
+
+        var reader = comm.ExecuteReader();
+        while (reader.NextResult())
         {
-            return Task.Run(() => EntitySp<TModel>(storedProc, parameters));
+            processAction(reader);
+        }
+    }
+
+    public IEnumerable<T> DataReader<T>(string commandText, Func<SqlDataReader, T> processAction, params SqlParameter[] parameters)
+    {
+        if (processAction == null)
+        {
+            throw new ArgumentNullException(nameof(processAction));
         }
 
-        public DbCollection<TModel> Collection<TModel>(string commandText, params SqlParameter[] parameters) where TModel : DbEntity, new()
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
+
+        comm.CommandText = commandText;
+        comm.Parameters.AddRange(parameters);
+
+        var reader = comm.ExecuteReader();
+        while (reader.Read())
         {
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
+            yield return processAction(reader);
+        }
+    }
 
-            comm.CommandText = commandText;
-            comm.Parameters.AddRange(parameters);
-
-            var table = new DataTable();
-
-            using (var adapter = new SqlDataAdapter(comm))
-            {
-                adapter.Fill(table);
-            }
-
-            return new DbCollection<TModel>(table);
+    public void DataReaderSp(string storedProc, Action<DbDataReader> processAction, params SqlParameter[] parameters)
+    {
+        if (processAction == null)
+        {
+            throw new ArgumentNullException(nameof(processAction));
         }
 
-        public DbCollection<TModel> CollectionSp<TModel>(string storedProc, params SqlParameter[] parameters) where TModel : DbEntity, new()
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        comm.CommandText = storedProc;
+        comm.CommandType = CommandType.StoredProcedure;
+
+        comm.Parameters.AddRange(parameters);
+
+        var reader = comm.ExecuteReader();
+        while (reader.NextResult())
         {
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
+            processAction(reader);
+        }
+    }
 
-            comm.CommandText = storedProc;
-            comm.CommandType = CommandType.StoredProcedure;
-
-            comm.Parameters.AddRange(parameters);
-
-            var table = new DataTable();
-
-            using (var adapter = new SqlDataAdapter(comm))
-            {
-                adapter.Fill(table);
-            }
-
-            return new DbCollection<TModel>(table);
+    public IEnumerable<T> DataReaderSp<T>(string storedProc, Func<SqlDataReader, T> processAction, params SqlParameter[] parameters)
+    {
+        if (processAction == null)
+        {
+            throw new ArgumentNullException(nameof(processAction));
         }
 
-        public static void Configure(string connectionString)
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
+
+        comm.CommandText = storedProc;
+        comm.CommandType = CommandType.StoredProcedure;
+
+        comm.Parameters.AddRange(parameters);
+
+        var reader = comm.ExecuteReader();
+        while (reader.Read())
         {
-            _connectionString = connectionString;
+            yield return processAction(reader);
         }
+    }
 
-        public void DataReader(string commandText, Action<DbDataReader> processAction, params SqlParameter[] parameters)
-        {
-            if (processAction == null)
-            {
-                throw new ArgumentNullException(nameof(processAction));
-            }
+    public DataSet DataSet(string commandText, params SqlParameter[] parameters)
+    {
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
 
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            comm.CommandText = commandText;
-            comm.Parameters.AddRange(parameters);
+        comm.CommandText = commandText;
+        comm.CommandType = CommandType.Text;
 
-            var reader = comm.ExecuteReader();
-            while (reader.NextResult())
-            {
-                processAction(reader);
-            }
-        }
+        comm.Parameters.AddRange(parameters);
 
-        public IEnumerable<T> DataReader<T>(string commandText, Func<SqlDataReader, T> processAction, params SqlParameter[] parameters)
-        {
-            if (processAction == null)
-            {
-                throw new ArgumentNullException(nameof(processAction));
-            }
+        var set = new DataSet();
 
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
+        using var adapter = new SqlDataAdapter(comm);
+        adapter.Fill(set);
 
-            comm.CommandText = commandText;
-            comm.Parameters.AddRange(parameters);
+        return set;
+    }
 
-            var reader = comm.ExecuteReader();
-            while (reader.Read())
-            {
-                yield return processAction(reader);
-            }
-        }
+    public DataSet DataSetSp(string storedProc, params SqlParameter[] parameters)
+    {
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
 
-        public void DataReaderSp(string storedProc, Action<DbDataReader> processAction, params SqlParameter[] parameters)
-        {
-            if (processAction == null)
-            {
-                throw new ArgumentNullException(nameof(processAction));
-            }
+        comm.CommandText = storedProc;
+        comm.CommandType = CommandType.StoredProcedure;
 
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            comm.CommandText = storedProc;
-            comm.CommandType = CommandType.StoredProcedure;
+        comm.Parameters.AddRange(parameters);
 
-            comm.Parameters.AddRange(parameters);
+        var set = new DataSet();
 
-            var reader = comm.ExecuteReader();
-            while (reader.NextResult())
-            {
-                processAction(reader);
-            }
-        }
+        using var adapter = new SqlDataAdapter(comm);
+        adapter.Fill(set);
 
-        public IEnumerable<T> DataReaderSp<T>(string storedProc, Func<SqlDataReader, T> processAction, params SqlParameter[] parameters)
-        {
-            if (processAction == null)
-            {
-                throw new ArgumentNullException(nameof(processAction));
-            }
+        return set;
+    }
 
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
+    public DataTable DataTable(string commandText, params SqlParameter[] parameters)
+    {
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
 
-            comm.CommandText = storedProc;
-            comm.CommandType = CommandType.StoredProcedure;
+        comm.CommandText = commandText;
+        comm.CommandType = CommandType.Text;
 
-            comm.Parameters.AddRange(parameters);
+        comm.Parameters.AddRange(parameters);
 
-            var reader = comm.ExecuteReader();
-            while (reader.Read())
-            {
-                yield return processAction(reader);
-            }
-        }
+        var table = new DataTable();
 
-        public DataSet DataSet(string commandText, params SqlParameter[] parameters)
-        {
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
+        using var adapter = new SqlDataAdapter(comm);
+        adapter.Fill(table);
 
-            comm.CommandText = commandText;
-            comm.CommandType = CommandType.Text;
+        return table;
+    }
 
-            comm.Parameters.AddRange(parameters);
+    public DataTable DataTableSp(string storedProc, params SqlParameter[] parameters)
+    {
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
 
-            var set = new DataSet();
+        comm.CommandText = storedProc;
+        comm.CommandType = CommandType.StoredProcedure;
 
-            using (var adapter = new SqlDataAdapter(comm))
-            {
-                adapter.Fill(set);
-            }
+        comm.Parameters.AddRange(parameters);
 
-            return set;
-        }
+        var table = new DataTable();
 
-        public DataSet DataSetSp(string storedProc, params SqlParameter[] parameters)
-        {
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
+        using var adapter = new SqlDataAdapter(comm);
+        adapter.Fill(table);
 
-            comm.CommandText = storedProc;
-            comm.CommandType = CommandType.StoredProcedure;
+        return table;
+    }
 
-            comm.Parameters.AddRange(parameters);
+    public TEntity Entity<TEntity>(string storedProc, params SqlParameter[] parameters) where TEntity : DbEntity, new() => Collection<TEntity>(storedProc, parameters).FirstOrDefault();
 
-            var set = new DataSet();
+    public TEntity EntitySp<TEntity>(string storedProc, params SqlParameter[] parameters) where TEntity : DbEntity, new() => CollectionSp<TEntity>(storedProc, parameters).FirstOrDefault();
 
-            using (var adapter = new SqlDataAdapter(comm))
-            {
-                adapter.Fill(set);
-            }
+    public int NonQuery(string commandText, params SqlParameter[] parameters)
+    {
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
 
-            return set;
-        }
+        comm.CommandText = commandText;
+        comm.Parameters.AddRange(parameters);
 
-        public DataTable DataTable(string commandText, params SqlParameter[] parameters)
-        {
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
+        return comm.ExecuteNonQuery();
+    }
 
-            comm.CommandText = commandText;
-            comm.CommandType = CommandType.Text;
+    public int NonQuerySp(string storedProc, params SqlParameter[] parameters)
+    {
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
 
-            comm.Parameters.AddRange(parameters);
+        comm.CommandText = storedProc;
+        comm.CommandType = CommandType.StoredProcedure;
 
-            var table = new DataTable();
+        comm.Parameters.AddRange(parameters);
 
-            using (var adapter = new SqlDataAdapter(comm))
-            {
-                adapter.Fill(table);
-            }
+        return comm.ExecuteNonQuery();
+    }
 
-            return table;
-        }
+    public TScalar Scalar<TScalar>(string commandText, params SqlParameter[] parameters)
+    {
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
 
-        public DataTable DataTableSp(string storedProc, params SqlParameter[] parameters)
-        {
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
+        comm.CommandText = commandText;
+        comm.Parameters.AddRange(parameters);
 
-            comm.CommandText = storedProc;
-            comm.CommandType = CommandType.StoredProcedure;
+        return (TScalar) comm.ExecuteScalar();
+    }
 
-            comm.Parameters.AddRange(parameters);
+    public TScalar ScalarSp<TScalar>(string storedProc, params SqlParameter[] parameters)
+    {
+        using var conn = new SqlConnection(_myConnectionString);
+        using var comm = conn.CreateCommand();
+        conn.Open();
 
-            var table = new DataTable();
+        comm.CommandText = storedProc;
+        comm.CommandType = CommandType.StoredProcedure;
 
-            using (var adapter = new SqlDataAdapter(comm))
-            {
-                adapter.Fill(table);
-            }
+        comm.Parameters.AddRange(parameters);
 
-            return table;
-        }
-
-        public TEntity Entity<TEntity>(string storedProc, params SqlParameter[] parameters) where TEntity : DbEntity, new() => Collection<TEntity>(storedProc, parameters).FirstOrDefault();
-
-        public TEntity EntitySp<TEntity>(string storedProc, params SqlParameter[] parameters) where TEntity : DbEntity, new() => CollectionSp<TEntity>(storedProc, parameters).FirstOrDefault();
-
-        public int NonQuery(string commandText, params SqlParameter[] parameters)
-        {
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
-
-            comm.CommandText = commandText;
-            comm.Parameters.AddRange(parameters);
-
-            return comm.ExecuteNonQuery();
-        }
-
-        public int NonQuerySp(string storedProc, params SqlParameter[] parameters)
-        {
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
-
-            comm.CommandText = storedProc;
-            comm.CommandType = CommandType.StoredProcedure;
-
-            comm.Parameters.AddRange(parameters);
-
-            return comm.ExecuteNonQuery();
-        }
-
-        public TScalar Scalar<TScalar>(string commandText, params SqlParameter[] parameters)
-        {
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
-
-            comm.CommandText = commandText;
-            comm.Parameters.AddRange(parameters);
-
-            return (TScalar) comm.ExecuteScalar();
-        }
-
-        public TScalar ScalarSp<TScalar>(string storedProc, params SqlParameter[] parameters)
-        {
-            using var conn = new SqlConnection(_myConnectionString);
-            using var comm = conn.CreateCommand();
-            conn.Open();
-
-            comm.CommandText = storedProc;
-            comm.CommandType = CommandType.StoredProcedure;
-
-            comm.Parameters.AddRange(parameters);
-
-            return (TScalar) comm.ExecuteScalar();
-        }
+        return (TScalar) comm.ExecuteScalar();
     }
 }

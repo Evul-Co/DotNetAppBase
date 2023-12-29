@@ -27,15 +27,14 @@
 
 using System;
 
-namespace DotNetAppBase.Std.Library.Guids
-{
-    public class XGuidAttribute : Attribute
-    {
-        public XGuidAttribute(string guid)
-        {
-            Value = Guid.Parse(guid);
-        }
+namespace DotNetAppBase.Std.Library.Guids;
 
-        public Guid Value { get; }
+public class XGuidAttribute : Attribute
+{
+    public XGuidAttribute(string guid)
+    {
+        Value = Guid.Parse(guid);
     }
+
+    public Guid Value { get; }
 }

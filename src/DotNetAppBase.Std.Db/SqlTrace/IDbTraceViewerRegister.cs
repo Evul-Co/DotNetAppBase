@@ -27,10 +27,9 @@
 
 using System;
 
-namespace DotNetAppBase.Std.Db.SqlTrace
+namespace DotNetAppBase.Std.Db.SqlTrace;
+
+public interface IDbTraceViewerRegister : IDisposable
 {
-    public interface IDbTraceViewerRegister : IDisposable
-    {
-        DbTraceEventHandler DbTraceHandler { get; }
-    }
+    DbTraceEventHandler DbTraceHandler { get; }
 }

@@ -35,16 +35,15 @@ using System.Data.SqlClient;
 using Microsoft.Data.SqlClient;
 #endif
 
-namespace DotNetAppBase.Std.Db.SqlServer
+namespace DotNetAppBase.Std.Db.SqlServer;
+
+public class SqlServerSession : DbSession
 {
-    public class SqlServerSession : DbSession
-    {
-        public SqlServerSession(IDbDatabase dbServerDatabase) : base(dbServerDatabase) { }
+    public SqlServerSession(IDbDatabase dbServerDatabase) : base(dbServerDatabase) { }
 
-        public override DbDataAdapter CreateDataAtapter(DbCommand cmd) => new SqlDataAdapter(cmd.CastTo<SqlCommand>());
+    public override DbDataAdapter CreateDataAtapter(DbCommand cmd) => new SqlDataAdapter(cmd.CastTo<SqlCommand>());
 
-        public override DbParameter CreateReturnParameter() => new SqlParameter {ParameterName = "@RETURN_VALUE", Direction = ParameterDirection.ReturnValue};
+    public override DbParameter CreateReturnParameter() => new SqlParameter {ParameterName = "@RETURN_VALUE", Direction = ParameterDirection.ReturnValue};
 
-        public override bool RetryInteractionOnDbExcepion(DbException exception) => SqlServerExceptionHandler.RetryInteraction(Database, exception.CastTo<SqlException>());
-    }
+    public override bool RetryInteractionOnDbExcepion(DbException exception) => SqlServerExceptionHandler.RetryInteraction(Database, exception.CastTo<SqlException>());
 }

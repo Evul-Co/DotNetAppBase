@@ -27,28 +27,27 @@
 
 using System.Data.Common;
 
-namespace DotNetAppBase.Std.Db.Contract
+namespace DotNetAppBase.Std.Db.Contract;
+
+public interface IDbSession : IDbAccessProvider
 {
-    public interface IDbSession : IDbAccessProvider
-    {
-        IDbDatabase Database { get; }
+    IDbDatabase Database { get; }
 
-        bool InTransaction { get; }
+    bool InTransaction { get; }
 
-        IDbTransactionManager TransactionManager { get; }
+    IDbTransactionManager TransactionManager { get; }
 
-        void BeginTransaction();
+    void BeginTransaction();
 
-        IDbContext BuildContext();
+    IDbContext BuildContext();
 
-        void Commit();
+    void Commit();
 
-        DbDataAdapter CreateDataAtapter(DbCommand cmd);
+    DbDataAdapter CreateDataAtapter(DbCommand cmd);
 
-        DbParameter CreateReturnParameter();
+    DbParameter CreateReturnParameter();
 
-        bool RetryInteractionOnDbExcepion(DbException exception);
+    bool RetryInteractionOnDbExcepion(DbException exception);
 
-        void Rollback();
-    }
+    void Rollback();
 }
