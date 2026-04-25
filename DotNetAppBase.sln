@@ -3,23 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Library", "DotNetAppBase.Std.Library\DotNetAppBase.Std.Library.csproj", "{2ED25731-B5FF-4F91-8A63-568A9333496E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Library", "src\DotNetAppBase.Std.Library\DotNetAppBase.Std.Library.csproj", "{2ED25731-B5FF-4F91-8A63-568A9333496E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Exceptions", "DotNetAppBase.Std.Exceptions\DotNetAppBase.Std.Exceptions.csproj", "{461B478E-2D0E-4DCA-905C-D748C7C58205}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Exceptions", "src\DotNetAppBase.Std.Exceptions\DotNetAppBase.Std.Exceptions.csproj", "{461B478E-2D0E-4DCA-905C-D748C7C58205}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Extensions", "DotNetAppBase.Std.Extensions\DotNetAppBase.Std.Extensions.csproj", "{F1BDE728-6B7A-4C8E-A776-A232A662058F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Extensions", "src\DotNetAppBase.Std.Extensions\DotNetAppBase.Std.Extensions.csproj", "{F1BDE728-6B7A-4C8E-A776-A232A662058F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Db", "DotNetAppBase.Std.Db\DotNetAppBase.Std.Db.csproj", "{572491C2-9E48-45D8-B277-4976D283ACB5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Db", "src\DotNetAppBase.Std.Db\DotNetAppBase.Std.Db.csproj", "{572491C2-9E48-45D8-B277-4976D283ACB5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Db.Work", "DotNetAppBase.Std.Db.Work\DotNetAppBase.Std.Db.Work.csproj", "{426E7264-5CDF-433D-AD1F-1CC1CDD15D2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Db.Work", "src\DotNetAppBase.Std.Db.Work\DotNetAppBase.Std.Db.Work.csproj", "{426E7264-5CDF-433D-AD1F-1CC1CDD15D2D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Db.SqlServer", "DotNetAppBase.Std.Db.SqlServer\DotNetAppBase.Std.Db.SqlServer.csproj", "{EE1A9825-DB1E-4785-ADBD-C87BA085755F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Db.SqlServer", "src\DotNetAppBase.Std.Db.SqlServer\DotNetAppBase.Std.Db.SqlServer.csproj", "{EE1A9825-DB1E-4785-ADBD-C87BA085755F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Worker", "DotNetAppBase.Std.Worker\DotNetAppBase.Std.Worker.csproj", "{4242F096-BD03-4832-B2FB-001A27B6308D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Worker", "src\DotNetAppBase.Std.Worker\DotNetAppBase.Std.Worker.csproj", "{4242F096-BD03-4832-B2FB-001A27B6308D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.RestClient", "DotNetAppBase.Std.RestClient\DotNetAppBase.Std.RestClient.csproj", "{42DE0000-C222-444F-B617-1A8536EA30E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.RestClient", "src\DotNetAppBase.Std.RestClient\DotNetAppBase.Std.RestClient.csproj", "{42DE0000-C222-444F-B617-1A8536EA30E5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Rmq", "DotNetAppBase.Std.Rmq\DotNetAppBase.Std.Rmq.csproj", "{723D1583-B08D-4DF0-9A76-A4CDA9AC8401}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Rmq", "src\DotNetAppBase.Std.Rmq\DotNetAppBase.Std.Rmq.csproj", "{723D1583-B08D-4DF0-9A76-A4CDA9AC8401}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
