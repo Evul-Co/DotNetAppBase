@@ -1,0 +1,25 @@
+name: Publish DotNetAppBase.Std.Db
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "DotNetAppBase.Std.Db-v*"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish_github_packages:
+    uses: ./.github/workflows/publish-dotnet-package.yml
+    with:
+      project_path: src/DotNetAppBase.Std.Db/DotNetAppBase.Std.Db.csproj
+    secrets: inherit
+
+  publish_nugetorg:
+    uses: ./.github/workflows/publish-nugetorg-package.yml
+    with:
+      project_path: src/DotNetAppBase.Std.Db/DotNetAppBase.Std.Db.csproj
+    secrets:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

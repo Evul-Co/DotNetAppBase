@@ -48,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotnetAppBase.Std.Exceptions\DotNetAppBase.Std.Exceptions.csproj" />
+    <ProjectReference Include="..\DotNetAppBase.Std.Exceptions\DotNetAppBase.Std.Exceptions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

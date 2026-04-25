@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotnetAppBase.Std.Library\DotNetAppBase.Std.Library.csproj" />
+    <ProjectReference Include="..\DotNetAppBase.Std.Library\DotNetAppBase.Std.Library.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,25 @@
+name: Publish DotNetAppBase.Std.RestClient
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "DotNetAppBase.Std.RestClient-v*"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish_github_packages:
+    uses: ./.github/workflows/publish-dotnet-package.yml
+    with:
+      project_path: src/DotNetAppBase.Std.RestClient/DotNetAppBase.Std.RestClient.csproj
+    secrets: inherit
+
+  publish_nugetorg:
+    uses: ./.github/workflows/publish-nugetorg-package.yml
+    with:
+      project_path: src/DotNetAppBase.Std.RestClient/DotNetAppBase.Std.RestClient.csproj
+    secrets:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
