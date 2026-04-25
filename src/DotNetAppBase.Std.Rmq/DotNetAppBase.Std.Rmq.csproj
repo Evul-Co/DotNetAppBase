@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/GrappTec/DotNetAppBase</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageReleaseNotes>Full GrappTec dependencies published to NuGet.</PackageReleaseNotes>
-    <Version>1.0.3</Version>
+    <Version>3.0.0</Version>
     <Authors>Adriano Sepe</Authors>
     <Company>GrappTec</Company>
     <Description>Abstraction to use RabbitMQ.</Description>
