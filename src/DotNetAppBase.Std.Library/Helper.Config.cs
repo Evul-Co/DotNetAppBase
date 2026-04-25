@@ -50,15 +50,17 @@ public static partial class XHelper
 
     public static class Configs
     {
+        public static string GlobalCustomSettingID { get; set; }
+
         [Localizable(false)]
-        public static SettingsBuilder CustomAppSettings(string sectionID, string settingID = null, string directory = null) => new SettingsBuilder(sectionID, settingID, directory);
+        public static SettingsBuilder CustomAppSettings(string sectionID, string settingID = null, string directory = null) => new(sectionID, settingID ?? GlobalCustomSettingID, directory);
 
 #if !NETSTANDARD
-        public static readonly ConfigWrapper<string, string> AppSettings = new ConfigWrapper<string, string>(s => ConfigurationManager.AppSettings[s]);
+        public static readonly ConfigWrapper<string, string> AppSettings = new(s => ConfigurationManager.AppSettings[s]);
 
-        public static readonly ConfigWrapper<string, string> ConnStrings = new ConfigWrapper<string, string>(s => ConfigurationManager.ConnectionStrings[s].ConnectionString);
+        public static readonly ConfigWrapper<string, string> ConnStrings = new(s => ConfigurationManager.ConnectionStrings[s].ConnectionString);
 
-        public static readonly ConfigWrapper<string, ConnectionStringSettings> ConnStringsSettings = new ConfigWrapper<string, ConnectionStringSettings>(s => ConfigurationManager.ConnectionStrings[s]);
+        public static readonly ConfigWrapper<string, ConnectionStringSettings> ConnStringsSettings = new(s => ConfigurationManager.ConnectionStrings[s]);
 #endif
     }
 }
