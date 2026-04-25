@@ -28,9 +28,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.OleDb;
 using System.Linq;
 using DotNetAppBase.Std.Library;
+
+#if NETFRAMEWORK
+using System.Data.OleDb;
+#endif
 
 // ReSharper disable CheckNamespace
 public static class XDataTableExtensions

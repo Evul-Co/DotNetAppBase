@@ -2,9 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>net48;netstandard2.0</TargetFrameworks>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\.keys\GrappDefaultKey.pfx</AssemblyOriginatorKeyFile>
-    <DelaySign>false</DelaySign>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <AssemblyName>DotNetAppBase.Std.Extensions</AssemblyName>
     <RootNamespace>DotNetAppBase.Std.Extensions</RootNamespace>
@@ -26,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0" />
   </ItemGroup>
 
   <ItemGroup>
