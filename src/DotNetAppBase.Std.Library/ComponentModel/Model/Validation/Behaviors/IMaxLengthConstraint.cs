@@ -25,10 +25,9 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Behaviors
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Behaviors;
+
+public interface IMaxLengthConstraint
 {
-    public interface IMaxLengthConstraint
-    {
-        int Value { get; }
-    }
+    int Value { get; }
 }

@@ -27,10 +27,9 @@
 
 using DotNetAppBase.Std.Library.ComponentModel.Model.Business.Enums;
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Business
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Business;
+
+public interface ILogicalDelete
 {
-    public interface ILogicalDelete
-    {
-        ELogicalDelete Situacao { get; set; }
-    }
+    ELogicalDelete Situacao { get; set; }
 }

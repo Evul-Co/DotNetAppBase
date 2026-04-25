@@ -29,71 +29,70 @@ using System.Data;
 using System.Data.Common;
 using DotNetAppBase.Std.Db.Contract;
 
-namespace DotNetAppBase.Std.Db
+namespace DotNetAppBase.Std.Db;
+
+public class DbTransactionManager : IDbTransactionManager
 {
-    public class DbTransactionManager : IDbTransactionManager
+    public DbTransactionManager(IDbSession session)
     {
-        public DbTransactionManager(IDbSession session)
+        Session = session;
+    }
+
+    public DbConnection Connection { get; private set; }
+
+    public bool InTransaction => Transaction != null;
+
+    public IDbSession Session { get; }
+
+    public DbTransaction Transaction { get; private set; }
+
+    public void Commit()
+    {
+        if (!InTransaction)
         {
-            Session = session;
+            return;
         }
 
-        public DbConnection Connection { get; private set; }
+        Transaction.Commit();
 
-        public bool InTransaction => Transaction != null;
+        Clean();
+    }
 
-        public IDbSession Session { get; }
-
-        public DbTransaction Transaction { get; private set; }
-
-        public void Commit()
+    public void Rollback()
+    {
+        if (!InTransaction)
         {
-            if (!InTransaction)
-            {
-                return;
-            }
-
-            Transaction.Commit();
-
-            Clean();
+            return;
         }
 
-        public void Rollback()
+        Transaction.Rollback();
+
+        Clean();
+    }
+
+    public void StartTransaction()
+    {
+        if (InTransaction)
         {
-            if (!InTransaction)
-            {
-                return;
-            }
-
-            Transaction.Rollback();
-
-            Clean();
+            return;
         }
 
-        public void StartTransaction()
+        Connection = Session.Database.NewConnection();
+
+        if (Connection.State == ConnectionState.Closed)
         {
-            if (InTransaction)
-            {
-                return;
-            }
-
-            Connection = Session.Database.NewConnection();
-
-            if (Connection.State == ConnectionState.Closed)
-            {
-                Connection.Open();
-            }
-
-            Transaction = Connection.BeginTransaction();
+            Connection.Open();
         }
 
-        private void Clean()
-        {
-            Connection.Dispose();
-            Transaction.Dispose();
+        Transaction = Connection.BeginTransaction();
+    }
 
-            Connection = null;
-            Transaction = null;
-        }
+    private void Clean()
+    {
+        Connection.Dispose();
+        Transaction.Dispose();
+
+        Connection = null;
+        Transaction = null;
     }
 }

@@ -27,18 +27,17 @@
 
 using System;
 
-namespace DotNetAppBase.Std.Library.Events
+namespace DotNetAppBase.Std.Library.Events;
+
+public class DataEventArgs<TData> : EventArgs
 {
-    public class DataEventArgs<TData> : EventArgs
+    public DataEventArgs(TData data, string additionalData = null)
     {
-        public DataEventArgs(TData data, string additionalData = null)
-        {
-            Data = data;
-            AdditionalData = additionalData;
-        }
-
-        public string AdditionalData { get; }
-
-        public TData Data { get; }
+        Data = data;
+        AdditionalData = additionalData;
     }
+
+    public string AdditionalData { get; }
+
+    public TData Data { get; }
 }

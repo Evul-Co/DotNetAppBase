@@ -25,12 +25,11 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.Contact
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.Contact;
+
+public enum EUrlOption
 {
-    public enum EUrlOption
-    {
-        RequireProtocol,
-        OptionalProtocol,
-        WithoutProtocol
-    }
+    RequireProtocol,
+    OptionalProtocol,
+    WithoutProtocol
 }

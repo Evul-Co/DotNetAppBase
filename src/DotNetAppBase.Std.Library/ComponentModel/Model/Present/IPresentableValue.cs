@@ -25,10 +25,9 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Present
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Present;
+
+public interface IPresentableValue : IPresentable
 {
-    public interface IPresentableValue : IPresentable
-    {
-        decimal Value { get; }
-    }
+    decimal Value { get; }
 }

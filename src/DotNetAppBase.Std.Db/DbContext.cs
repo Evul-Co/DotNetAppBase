@@ -32,111 +32,110 @@ using DotNetAppBase.Std.Db.Contract;
 using DotNetAppBase.Std.Db.Enums;
 using DotNetAppBase.Std.Exceptions.Base;
 
-namespace DotNetAppBase.Std.Db
+namespace DotNetAppBase.Std.Db;
+
+public class DbContext : IDbContext
 {
-    public class DbContext : IDbContext
+    private readonly bool _allowConnectionDispose;
+
+    private bool _disposed;
+
+    public DbContext(DbConnection connection, bool allowConnectionDispose)
     {
-        private readonly bool _allowConnectionDispose;
+        Connection = connection;
+        State = EDbContextState.OutTransaction;
 
-        private bool _disposed;
+        _allowConnectionDispose = allowConnectionDispose;
+    }
 
-        public DbContext(DbConnection connection, bool allowConnectionDispose)
+    public DbContext(DbConnection connection, DbTransaction transaction, bool allowConnectionDispose) : this(connection, allowConnectionDispose)
+    {
+        Transaction = transaction;
+        State = EDbContextState.InTransaction;
+
+        _allowConnectionDispose = allowConnectionDispose;
+    }
+
+    public DbConnection Connection { get; private set; }
+
+    public bool InTransaction => Transaction != null;
+
+    public bool IsAvailable => State != EDbContextState.Disposed && (State == EDbContextState.OutTransaction || State == EDbContextState.InTransaction);
+
+    public EDbContextState State { get; internal set; }
+
+    public DbTransaction Transaction { get; }
+
+    public void Close()
+    {
+        if (!InTransaction)
         {
-            Connection = connection;
-            State = EDbContextState.OutTransaction;
+            Connection.Close();
+        }
+    }
 
-            _allowConnectionDispose = allowConnectionDispose;
+    public DbCommand CreateCommand()
+    {
+        ThrowExceptionIsNotAvailable();
+
+        var command = Connection.CreateCommand();
+        command.Transaction = Transaction;
+
+        return command;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+    }
+
+    public void Open()
+    {
+        ThrowExceptionIsNotAvailable();
+
+        if (Connection.State == ConnectionState.Closed)
+        {
+            Connection.Open();
+        }
+    }
+
+    ~DbContext()
+    {
+        Dispose(false);
+    }
+
+    internal void Dispose(bool disposing)
+    {
+        if (_disposed)
+        {
+            return;
         }
 
-        public DbContext(DbConnection connection, DbTransaction transaction, bool allowConnectionDispose) : this(connection, allowConnectionDispose)
+        _disposed = true;
+
+        if (!InTransaction)
         {
-            Transaction = transaction;
-            State = EDbContextState.InTransaction;
-
-            _allowConnectionDispose = allowConnectionDispose;
-        }
-
-        public DbConnection Connection { get; private set; }
-
-        public bool InTransaction => Transaction != null;
-
-        public bool IsAvailable => State != EDbContextState.Disposed && (State == EDbContextState.OutTransaction || State == EDbContextState.InTransaction);
-
-        public EDbContextState State { get; internal set; }
-
-        public DbTransaction Transaction { get; }
-
-        public void Close()
-        {
-            if (!InTransaction)
+            if (disposing && _allowConnectionDispose)
             {
-                Connection.Close();
-            }
-        }
-
-        public DbCommand CreateCommand()
-        {
-            ThrowExceptionIsNotAvailable();
-
-            var command = Connection.CreateCommand();
-            command.Transaction = Transaction;
-
-            return command;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        public void Open()
-        {
-            ThrowExceptionIsNotAvailable();
-
-            if (Connection.State == ConnectionState.Closed)
-            {
-                Connection.Open();
-            }
-        }
-
-        ~DbContext()
-        {
-            Dispose(false);
-        }
-
-        internal void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            _disposed = true;
-
-            if (!InTransaction)
-            {
-                if (disposing && _allowConnectionDispose)
-                {
-                    Connection.Dispose();
-                }
-
-                Connection = null;
+                Connection.Dispose();
             }
 
-            State = EDbContextState.Disposed;
-
-            if (disposing)
-            {
-                GC.SuppressFinalize(this);
-            }
+            Connection = null;
         }
 
-        private void ThrowExceptionIsNotAvailable()
+        State = EDbContextState.Disposed;
+
+        if (disposing)
         {
-            if (!IsAvailable)
-            {
-                throw new XException("A contexto de transação foi finalizado tornando-se indisponível para essa operação.");
-            }
+            GC.SuppressFinalize(this);
+        }
+    }
+
+    private void ThrowExceptionIsNotAvailable()
+    {
+        if (!IsAvailable)
+        {
+            throw new XException("A contexto de transação foi finalizado tornando-se indisponível para essa operação.");
         }
     }
 }

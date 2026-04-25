@@ -25,14 +25,13 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Svc.Enums
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Svc.Enums;
+
+public enum EServiceActionType
 {
-    public enum EServiceActionType
-    {
-        Insert = 1,
+    Insert = 1,
 
-        Update = 2,
+    Update = 2,
 
-        Delete = 3
-    }
+    Delete = 3
 }

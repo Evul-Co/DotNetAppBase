@@ -26,10 +26,9 @@
 #endregion
 
 // ReSharper disable UnusedMember.Global
-namespace DotNetAppBase.Std.Library.Tasks.Worker
+namespace DotNetAppBase.Std.Library.Tasks.Worker;
+
+public interface IWorkerDequeue<T> : IWorker<T>
 {
-    public interface IWorkerDequeue<T> : IWorker<T>
-    {
-        void Keepalive();
-    }
+    void Keepalive();
 }

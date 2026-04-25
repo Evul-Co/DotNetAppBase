@@ -34,85 +34,84 @@ using System.Threading;
 using DotNetAppBase.Std.Library.Tasks;
 using DotNetAppBase.Std.Library.Tasks.Threading;
 
-namespace DotNetAppBase.Std.Library.Net
+namespace DotNetAppBase.Std.Library.Net;
+
+public class UdpTransmiteTask : XTask
 {
-    public class UdpTransmiteTask : XTask
+    private readonly BlockingCollection<Item> _data;
+    private readonly IDestinationProvider _destinationProvider;
+
+    private readonly Socket _socket;
+
+    private CancellationTokenSource _cancellationTokenSource;
+
+    public UdpTransmiteTask(IDestinationProvider destinationProvider)
     {
-        private readonly BlockingCollection<Item> _data;
-        private readonly IDestinationProvider _destinationProvider;
+        _destinationProvider = destinationProvider;
 
-        private readonly Socket _socket;
+        _cancellationTokenSource = new CancellationTokenSource();
 
-        private CancellationTokenSource _cancellationTokenSource;
+        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-        public UdpTransmiteTask(IDestinationProvider destinationProvider)
+        _data = new BlockingCollection<Item>();
+
+        AutoCatchException = false;
+    }
+
+    public void Add(byte[] datagrama)
+    {
+        if (IsStopping)
         {
-            _destinationProvider = destinationProvider;
-
-            _cancellationTokenSource = new CancellationTokenSource();
-
-            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-
-            _data = new BlockingCollection<Item>();
-
-            AutoCatchException = false;
+            return;
         }
 
-        public void Add(byte[] datagrama)
+        _data.Add(new Item {Datagrama = datagrama});
+    }
+
+    protected override void InternalExecute()
+    {
+        var item = _data.Take(_cancellationTokenSource.Token);
+
+        foreach (var ep in _destinationProvider.Get())
         {
-            if (IsStopping)
+            try
             {
-                return;
+                _socket.SendTo(item.Datagrama, ep);
             }
-
-            _data.Add(new Item {Datagrama = datagrama});
-        }
-
-        protected override void InternalExecute()
-        {
-            var item = _data.Take(_cancellationTokenSource.Token);
-
-            foreach (var ep in _destinationProvider.Get())
+            catch (Exception)
             {
-                try
-                {
-                    _socket.SendTo(item.Datagrama, ep);
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
+                // ignored
             }
         }
+    }
 
-        protected override TimeSpan? InternalGetFrequency() => null;
+    protected override TimeSpan? InternalGetFrequency() => null;
 
-        protected override void InternalWaitComplete(ref bool waitComplete, XTimeout tOut)
+    protected override void InternalWaitComplete(ref bool waitComplete, XTimeout tOut)
+    {
+        base.InternalWaitComplete(ref waitComplete, tOut);
+
+        if (waitComplete && tOut.Keep())
         {
-            base.InternalWaitComplete(ref waitComplete, tOut);
-
-            if (waitComplete && tOut.Keep())
+            while (_data.Count > 0 && tOut.Keep())
             {
-                while (_data.Count > 0 && tOut.Keep())
-                {
-                    Thread.Sleep(100);
-                }
+                Thread.Sleep(100);
             }
-
-            waitComplete = false;
-
-            _cancellationTokenSource.Cancel();
-            _cancellationTokenSource = new CancellationTokenSource();
         }
 
-        private class Item
-        {
-            public byte[] Datagrama { get; set; }
-        }
+        waitComplete = false;
 
-        public interface IDestinationProvider
-        {
-            IEnumerable<EndPoint> Get();
-        }
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource = new CancellationTokenSource();
+    }
+
+    private class Item
+    {
+        public byte[] Datagrama { get; set; }
+    }
+
+    public interface IDestinationProvider
+    {
+        IEnumerable<EndPoint> Get();
     }
 }

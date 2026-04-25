@@ -25,10 +25,9 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.TypedString
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Annotations.TypedString;
+
+public class XNameMediumAttribute : XMaxLengthAttribute
 {
-    public class XNameMediumAttribute : XMaxLengthAttribute
-    {
-        public XNameMediumAttribute() : base(50) { }
-    }
+    public XNameMediumAttribute() : base(50) { }
 }

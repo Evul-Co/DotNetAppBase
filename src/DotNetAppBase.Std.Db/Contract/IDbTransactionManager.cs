@@ -27,22 +27,21 @@
 
 using System.Data.Common;
 
-namespace DotNetAppBase.Std.Db.Contract
+namespace DotNetAppBase.Std.Db.Contract;
+
+public interface IDbTransactionManager
 {
-    public interface IDbTransactionManager
-    {
-        DbConnection Connection { get; }
+    DbConnection Connection { get; }
 
-        bool InTransaction { get; }
+    bool InTransaction { get; }
 
-        IDbSession Session { get; }
+    IDbSession Session { get; }
 
-        DbTransaction Transaction { get; }
+    DbTransaction Transaction { get; }
 
-        void Commit();
+    void Commit();
 
-        void Rollback();
+    void Rollback();
 
-        void StartTransaction();
-    }
+    void StartTransaction();
 }

@@ -25,14 +25,13 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Present
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Present;
+
+public interface IPresentDisplay
 {
-    public interface IPresentDisplay
-    {
-        string Description { get; }
+    string Description { get; }
 
-        string GroupName { get; }
+    string GroupName { get; }
 
-        string Name { get; }
-    }
+    string Name { get; }
 }

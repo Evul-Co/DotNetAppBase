@@ -25,15 +25,14 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Present
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Present;
+
+public interface IDisplayType
 {
-    public interface IDisplayType
-    {
-        string Description { get; }
-        string DisplayPattern { get; }
+    string Description { get; }
+    string DisplayPattern { get; }
 
-        int Level { get; }
+    int Level { get; }
 
-        string Name { get; }
-    }
+    string Name { get; }
 }

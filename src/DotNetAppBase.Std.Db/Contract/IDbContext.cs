@@ -29,24 +29,23 @@ using System;
 using System.Data.Common;
 using DotNetAppBase.Std.Db.Enums;
 
-namespace DotNetAppBase.Std.Db.Contract
+namespace DotNetAppBase.Std.Db.Contract;
+
+public interface IDbContext : IDisposable
 {
-    public interface IDbContext : IDisposable
-    {
-        DbConnection Connection { get; }
+    DbConnection Connection { get; }
 
-        bool InTransaction { get; }
+    bool InTransaction { get; }
 
-        bool IsAvailable { get; }
+    bool IsAvailable { get; }
 
-        EDbContextState State { get; }
+    EDbContextState State { get; }
 
-        DbTransaction Transaction { get; }
+    DbTransaction Transaction { get; }
 
-        void Close();
+    void Close();
 
-        DbCommand CreateCommand();
+    DbCommand CreateCommand();
 
-        void Open();
-    }
+    void Open();
 }

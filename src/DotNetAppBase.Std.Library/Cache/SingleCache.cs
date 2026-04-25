@@ -28,33 +28,32 @@
 using System;
 using DotNetAppBase.Std.Library.Concurrency;
 
-namespace DotNetAppBase.Std.Library.Cache
+namespace DotNetAppBase.Std.Library.Cache;
+
+public class SingleCache<T> : XLazy<T>
 {
-    public class SingleCache<T> : XLazy<T>
+    private readonly TimeSpan _invalidate;
+
+    private DateTime _lastInvalidate;
+
+    public SingleCache(TimeSpan invalidate, Func<T> valueFactory, Action<T> releaseAction = null, Action<T> onCreated = null)
+        : base(valueFactory, releaseAction, onCreated)
     {
-        private readonly TimeSpan _invalidate;
+        _invalidate = invalidate;
+    }
 
-        private DateTime _lastInvalidate;
+    protected override void CheckToInvalidate()
+    {
+        base.CheckToInvalidate();
 
-        public SingleCache(TimeSpan invalidate, Func<T> valueFactory, Action<T> releaseAction = null, Action<T> onCreated = null)
-            : base(valueFactory, releaseAction, onCreated)
+        var now = DateTime.Now;
+        if (now - _invalidate <= _lastInvalidate)
         {
-            _invalidate = invalidate;
+            return;
         }
 
-        protected override void CheckToInvalidate()
-        {
-            base.CheckToInvalidate();
+        Reset();
 
-            var now = DateTime.Now;
-            if (now - _invalidate <= _lastInvalidate)
-            {
-                return;
-            }
-
-            Reset();
-
-            _lastInvalidate = now;
-        }
+        _lastInvalidate = now;
     }
 }

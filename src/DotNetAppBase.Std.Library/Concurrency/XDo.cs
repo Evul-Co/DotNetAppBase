@@ -27,46 +27,45 @@
 
 using System;
 
-namespace DotNetAppBase.Std.Library.Concurrency
+namespace DotNetAppBase.Std.Library.Concurrency;
+
+public class XDo
 {
-    public class XDo
+    private readonly Action<object> _action;
+    private readonly object _sync = new object();
+
+    private bool _did;
+
+    public XDo(Action<object> action)
     {
-        private readonly Action<object> _action;
-        private readonly object _sync = new object();
+        _action = action;
+    }
 
-        private bool _did;
-
-        public XDo(Action<object> action)
+    public void Do(object args)
+    {
+        lock (_sync)
         {
-            _action = action;
-        }
-
-        public void Do(object args)
-        {
-            lock (_sync)
+            if (_did)
             {
-                if (_did)
-                {
-                    return;
-                }
-
-                _did = true;
-
-                _action(args);
+                return;
             }
+
+            _did = true;
+
+            _action(args);
         }
+    }
 
-        public void Reset()
+    public void Reset()
+    {
+        lock (_sync)
         {
-            lock (_sync)
+            if (!_did)
             {
-                if (!_did)
-                {
-                    return;
-                }
-
-                _did = false;
+                return;
             }
+
+            _did = false;
         }
     }
 }

@@ -25,12 +25,11 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.Map
-{
-    public struct Row<T>
-    {
-        public int Index { get; set; }
+namespace DotNetAppBase.Std.Library.Map;
 
-        public T Data { get; set; }
-    }
+public struct Row<T>
+{
+    public int Index { get; set; }
+
+    public T Data { get; set; }
 }
