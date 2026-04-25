@@ -19,7 +19,7 @@ namespace DotNetAppBase.Std.Library.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class DbEnums {
@@ -237,15 +237,6 @@ namespace DotNetAppBase.Std.Library.Properties {
         public static string EValidationKind_Warning {
             get {
                 return ResourceManager.GetString("EValidationKind_Warning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Período informado é inválido..
-        /// </summary>
-        public static string XDateRangeAttribute_IsValid_Período_informado_é_inválido_ {
-            get {
-                return ResourceManager.GetString("XDateRangeAttribute_IsValid_Período_informado_é_inválido_", resourceCulture);
             }
         }
     }

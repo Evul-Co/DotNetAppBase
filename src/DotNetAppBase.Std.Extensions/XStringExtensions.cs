@@ -71,6 +71,8 @@ public static class XStringExtensions
 
     public static string Delete(this string content, int countFromIndexZero, int countFromLastIndex = 0) => content.Substring(countFromIndexZero, content.Length - (countFromLastIndex + 1));
 
+    public static int IndexOfNth(this string str, char value, int nth = 0) => XHelper.Strings.IndexOfNth(str, value, nth);
+
     public static string Insert(this string original, string insertValue, int offset)
     {
         var ivLength = insertValue.Length;

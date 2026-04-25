@@ -29,13 +29,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Cronos;
-using Microsoft.Extensions.Hosting;
+using DotNetAppBase.Std.Worker.Base;
 using Microsoft.Extensions.Logging;
 using Timer = System.Timers.Timer;
 
 namespace DotNetAppBase.Std.Worker.Crons
 {
-    public abstract class CronHostedService : IHostedService, IDisposable
+    public abstract class CronHostedService : HostedServiceBase
     {
         private readonly string _cronExpression;
         private readonly CronExpression _expression;
@@ -43,9 +43,8 @@ namespace DotNetAppBase.Std.Worker.Crons
 
         private Timer _timer;
 
-        protected CronHostedService(string name, string cronExpression, TimeZoneInfo timeZoneInfo, ILoggerFactory loggerFactory)
+        protected CronHostedService(string cronExpression, TimeZoneInfo timeZoneInfo, ILoggerFactory loggerFactory)
         {
-            Name = name;
             _cronExpression = cronExpression;
 
             _expression = CronExpression.Parse(cronExpression);
@@ -54,13 +53,9 @@ namespace DotNetAppBase.Std.Worker.Crons
             Logger = loggerFactory.CreateLogger($"{GetType().Name}#{Name}");
         }
 
-        public string Name { get; }
+        protected override void InternalDisposing(in bool disposing) => _timer?.Dispose();
 
-        protected ILogger Logger { get; }
-
-        public virtual void Dispose() => _timer?.Dispose();
-
-        public virtual async Task StartAsync(CancellationToken cancellationToken)
+        public override async Task StartAsync(CancellationToken cancellationToken)
         {
             Logger.LogInformation($"Service starting (Cron: {_cronExpression})");
 

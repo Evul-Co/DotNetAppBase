@@ -25,18 +25,17 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Db.Contract
+namespace DotNetAppBase.Std.Db.Contract;
+
+public interface IDbStorage
 {
-    public interface IDbStorage
-    {
-        IDbDatabase DefaultDatabase { get; set; }
+    IDbDatabase DefaultDatabase { get; set; }
 
-        bool Constains(string name);
+    bool Constains(string name);
 
-        IDbDatabase Restore(string name);
+    IDbDatabase Restore(string name);
 
-        bool Storage(IDbDatabase database);
+    bool Storage(IDbDatabase database);
 
-        bool UnStorage(DbDatabase dataBase);
-    }
+    bool UnStorage(DbDatabase dataBase);
 }

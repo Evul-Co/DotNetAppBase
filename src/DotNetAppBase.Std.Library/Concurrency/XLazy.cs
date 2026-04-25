@@ -29,106 +29,105 @@ using System;
 
 // ReSharper disable UnusedMember.Global
 
-namespace DotNetAppBase.Std.Library.Concurrency
+namespace DotNetAppBase.Std.Library.Concurrency;
+
+public class XLazy<T>
 {
-    public class XLazy<T>
+    private readonly Action<T> _onCreated;
+    private readonly Action<T> _releaseAction;
+    private readonly object _sync = new object();
+
+    private readonly Func<T> _valueFactory;
+
+    private T _value;
+
+    public XLazy(Func<T> valueFactory, Action<T> releaseAction = null, Action<T> onCreated = null)
     {
-        private readonly Action<T> _onCreated;
-        private readonly Action<T> _releaseAction;
-        private readonly object _sync = new object();
+        _valueFactory = valueFactory;
+        _releaseAction = releaseAction;
+        _onCreated = onCreated;
+    }
 
-        private readonly Func<T> _valueFactory;
+    public bool IsValueCreated { get; private set; }
 
-        private T _value;
-
-        public XLazy(Func<T> valueFactory, Action<T> releaseAction = null, Action<T> onCreated = null)
+    public virtual T Value
+    {
+        get
         {
-            _valueFactory = valueFactory;
-            _releaseAction = releaseAction;
-            _onCreated = onCreated;
-        }
-
-        public bool IsValueCreated { get; private set; }
-
-        public virtual T Value
-        {
-            get
+            lock (_sync)
             {
-                lock (_sync)
+                CheckToInvalidate();
+
+                if (!IsValueCreated)
                 {
-                    CheckToInvalidate();
+                    IsValueCreated = true;
+                    _value = _valueFactory();
 
-                    if (!IsValueCreated)
-                    {
-                        IsValueCreated = true;
-                        _value = _valueFactory();
-
-                        _onCreated?.Invoke(_value);
-                    }
-
-                    return _value;
+                    _onCreated?.Invoke(_value);
                 }
-            }
 
-            protected set
-            {
-                lock (_sync)
-                {
-                    if (!IsValueCreated)
-                    {
-                        IsValueCreated = true;
-                        _value = value;
-
-                        _onCreated?.Invoke(_value);
-                    }
-                }
+                return _value;
             }
         }
 
-        public T ValueIfCreated
+        protected set
         {
-            get
-            {
-                lock (_sync)
-                {
-                    return _value;
-                }
-            }
-        }
-
-        public void Execute()
-        {
-            // ReSharper disable UnusedVariable
-            var obj = Value;
-            // ReSharper restore UnusedVariable
-        }
-
-        public void ReCreate()
-        {
-            Reset();
-
-            Execute();
-        }
-
-        public void Reset()
-        {
-            T lValue;
             lock (_sync)
             {
                 if (!IsValueCreated)
                 {
-                    return;
+                    IsValueCreated = true;
+                    _value = value;
+
+                    _onCreated?.Invoke(_value);
                 }
+            }
+        }
+    }
 
-                lValue = _value;
+    public T ValueIfCreated
+    {
+        get
+        {
+            lock (_sync)
+            {
+                return _value;
+            }
+        }
+    }
 
-                IsValueCreated = false;
-                _value = default;
+    public void Execute()
+    {
+        // ReSharper disable UnusedVariable
+        var obj = Value;
+        // ReSharper restore UnusedVariable
+    }
+
+    public void ReCreate()
+    {
+        Reset();
+
+        Execute();
+    }
+
+    public void Reset()
+    {
+        T lValue;
+        lock (_sync)
+        {
+            if (!IsValueCreated)
+            {
+                return;
             }
 
-            _releaseAction?.Invoke(lValue);
+            lValue = _value;
+
+            IsValueCreated = false;
+            _value = default;
         }
 
-        protected virtual void CheckToInvalidate() { }
+        _releaseAction?.Invoke(lValue);
     }
+
+    protected virtual void CheckToInvalidate() { }
 }

@@ -38,145 +38,144 @@ using DotNetAppBase.Std.Library.ComponentModel.Model;
 
 // ReSharper disable UnusedMember.Global
 
-namespace DotNetAppBase.Std.Db.Work
+namespace DotNetAppBase.Std.Db.Work;
+
+public class DbEntity : Entity
 {
-    public class DbEntity : Entity
+    private bool _dynamicScheme;
+
+    public DbEntity()
     {
-        private bool _dynamicScheme;
+        _dynamicScheme = true;
+    }
 
-        public DbEntity()
+    public DbEntity(DataRow data, bool dynamicScheme = false)
+    {
+        Data = data;
+
+        _dynamicScheme = dynamicScheme;
+    }
+
+    [JsonIgnore]
+    public DataRow Data { get; set; }
+
+    [JsonIgnore]
+    public bool IsDataNull => Data == null;
+
+    [JsonIgnore]
+    private DataTable Table => Data.Table;
+
+    public static IEnumerable<T> Create<T>(DataTable dt) where T : DbEntity, new()
+    {
+        if (dt == null || dt.Rows.Count <= 0)
         {
-            _dynamicScheme = true;
+            yield break;
         }
 
-        public DbEntity(DataRow data, bool dynamicScheme = false)
+        foreach (var row in dt.Rows.Cast<DataRow>())
         {
-            Data = data;
+            var entity = new T();
+            entity.Update(row);
 
-            _dynamicScheme = dynamicScheme;
+            yield return entity;
+        }
+    }
+
+    public static TModel Create<TModel>(DataRow row) where TModel : DbEntity, new()
+    {
+        var model = new TModel();
+        model.Update(row);
+
+        return model;
+    }
+
+    public static TModel New<TModel>() where TModel : DbEntity, new()
+    {
+        var model = new TModel();
+
+        model.ConfigureAsNew();
+
+        return model;
+    }
+
+    public T Read<T>(string fieldName, T defaultValue)
+    {
+        if (IsDataNull)
+        {
+            return defaultValue;
         }
 
-        [JsonIgnore]
-        public DataRow Data { get; set; }
+        var value = Data[fieldName];
 
-        [JsonIgnore]
-        public bool IsDataNull => Data == null;
+        return XHelper.Obj.IsNull(value) ? defaultValue : value.CastTo<T>();
+    }
 
-        [JsonIgnore]
-        private DataTable Table => Data.Table;
-
-        public static IEnumerable<T> Create<T>(DataTable dt) where T : DbEntity, new()
+    public T Read<T>([Localizable(false)] string fieldName)
+    {
+        if (IsDataNull)
         {
-            if (dt == null || dt.Rows.Count <= 0)
-            {
-                yield break;
-            }
-
-            foreach (var row in dt.Rows.Cast<DataRow>())
-            {
-                var entity = new T();
-                entity.Update(row);
-
-                yield return entity;
-            }
+            throw XFlowException.Create($"Os dados deste {nameof(DbEntity)} não foram informados.");
         }
 
-        public static TModel Create<TModel>(DataRow row) where TModel : DbEntity, new()
-        {
-            var model = new TModel();
-            model.Update(row);
+        var value = InternalReadField<T>(fieldName);
 
-            return model;
+        return value.CastTo<T>();
+    }
+
+    public void Update(DataRow data) => Data = data;
+
+    public void Write<T>(string fieldName, T value)
+    {
+        CheckExistsColumn<T>(fieldName);
+
+        Data[fieldName] = XHelper.Obj.IsNull(value) ? (object) DBNull.Value : value;
+
+        OnPropertyChanged(fieldName);
+    }
+
+    protected T AutoRead<T>([CallerMemberName] string fieldName = null) => Read(fieldName, default(T));
+
+    protected T AutoReadEnum<T>([CallerMemberName] string fieldName = null) => (T) Enum.ToObject(typeof(T), Read(fieldName, default(byte)));
+
+    protected void AutoWrite<T>(T value, [CallerMemberName] string fieldName = null) => Write(fieldName, value);
+
+    protected void AutoWriteEnum<T>(T value, [CallerMemberName] string fieldName = null) => Write(fieldName, Convert.ChangeType(value, typeof(byte)));
+
+    private void CheckExistsColumn<T>(string fieldName)
+    {
+        if (!_dynamicScheme)
+        {
+            return;
         }
 
-        public static TModel New<TModel>() where TModel : DbEntity, new()
+        if (Data == null)
         {
-            var model = new TModel();
-
-            model.ConfigureAsNew();
-
-            return model;
+            ConfigureAsNew();
+        }
+        else if (!_dynamicScheme || Table.Columns.Contains(fieldName))
+        {
+            return;
         }
 
-        public T Read<T>(string fieldName, T defaultValue)
-        {
-            if (IsDataNull)
-            {
-                return defaultValue;
-            }
+        Table.Columns.Add(fieldName, typeof(T));
+    }
 
-            var value = Data[fieldName];
+    private void ConfigureAsNew()
+    {
+        _dynamicScheme = true;
 
-            return XHelper.Obj.IsNull(value) ? defaultValue : value.CastTo<T>();
-        }
+        var table = new DataTable();
+        var row = table.NewRow();
 
-        public T Read<T>([Localizable(false)] string fieldName)
-        {
-            if (IsDataNull)
-            {
-                throw XFlowException.Create($"Os dados deste {nameof(DbEntity)} não foram informados.");
-            }
+        table.Rows.Add(row);
 
-            var value = InternalReadField<T>(fieldName);
+        Data = row;
+    }
 
-            return value.CastTo<T>();
-        }
+    private object InternalReadField<T>(string fieldName)
+    {
+        CheckExistsColumn<T>(fieldName);
 
-        public void Update(DataRow data) => Data = data;
-
-        public void Write<T>(string fieldName, T value)
-        {
-            CheckExistsColumn<T>(fieldName);
-
-            Data[fieldName] = XHelper.Obj.IsNull(value) ? (object) DBNull.Value : value;
-
-            OnPropertyChanged(fieldName);
-        }
-
-        protected T AutoRead<T>([CallerMemberName] string fieldName = null) => Read(fieldName, default(T));
-
-        protected T AutoReadEnum<T>([CallerMemberName] string fieldName = null) => (T) Enum.ToObject(typeof(T), Read(fieldName, default(byte)));
-
-        protected void AutoWrite<T>(T value, [CallerMemberName] string fieldName = null) => Write(fieldName, value);
-
-        protected void AutoWriteEnum<T>(T value, [CallerMemberName] string fieldName = null) => Write(fieldName, Convert.ChangeType(value, typeof(byte)));
-
-        private void CheckExistsColumn<T>(string fieldName)
-        {
-            if (!_dynamicScheme)
-            {
-                return;
-            }
-
-            if (Data == null)
-            {
-                ConfigureAsNew();
-            }
-            else if (!_dynamicScheme || Table.Columns.Contains(fieldName))
-            {
-                return;
-            }
-
-            Table.Columns.Add(fieldName, typeof(T));
-        }
-
-        private void ConfigureAsNew()
-        {
-            _dynamicScheme = true;
-
-            var table = new DataTable();
-            var row = table.NewRow();
-
-            table.Rows.Add(row);
-
-            Data = row;
-        }
-
-        private object InternalReadField<T>(string fieldName)
-        {
-            CheckExistsColumn<T>(fieldName);
-
-            return Data[fieldName];
-        }
+        return Data[fieldName];
     }
 }

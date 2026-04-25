@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\.keys\GrappDefaultKey.pfx</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AssemblyName>DotNetAppBase.Std.Rmq</AssemblyName>
+    <RootNamespace>DotNetAppBase.Std.Rmq</RootNamespace>
+    <LangVersion>8</LangVersion>
+    <PackageTags>RabbitMQ, Queue, Message Broker</PackageTags>
+
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/GrappTec/DotNetAppBase</PackageProjectUrl>
+    <PackageIcon></PackageIcon>
+    <RepositoryUrl>https://github.com/GrappTec/DotNetAppBase</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageReleaseNotes>Full GrappTec dependencies published to NuGet.</PackageReleaseNotes>
+    <Version>1.0.3</Version>
+    <Authors>Adriano Sepe</Authors>
+    <Company>GrappTec</Company>
+    <Description>Abstraction to use RabbitMQ.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+  </ItemGroup>
+
+</Project>

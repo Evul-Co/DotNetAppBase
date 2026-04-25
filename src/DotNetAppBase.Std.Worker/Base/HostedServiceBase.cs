@@ -55,7 +55,7 @@ namespace DotNetAppBase.Std.Worker.Base
 
         public string Name { get; private set; }
 
-        protected ILogger Logger { get; private set; }
+        protected ILogger Logger { get; set; }
 
         /// <summary>
         ///     Triggered when the application host is ready to start the service.

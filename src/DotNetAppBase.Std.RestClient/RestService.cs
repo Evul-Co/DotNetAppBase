@@ -48,7 +48,7 @@ namespace DotNetAppBase.Std.RestClient
             _client = new HttpClient();
         }
 
-        public async Task<Result<T>> Execute<T>(Func<IFlurlRequest, Task<Result<T>>> customizeAction)
+        public async Task<TypedResult<T>> Execute<T>(Func<IFlurlRequest, Task<TypedResult<T>>> customizeAction)
         {
             try
             {
@@ -60,7 +60,23 @@ namespace DotNetAppBase.Std.RestClient
             }
             catch (FlurlHttpException ex)
             {
-                return Result<T>.Exception(ex);
+                return TypedResult<T>.Exception(ex);
+            }
+        }
+
+        public async Task<TypedResult<T>> ExecuteWrapped<T>(Func<IFlurlRequest, Task<T>> customizeAction)
+        {
+            try
+            {
+                var url = new Url(_controller.BaseUrl());
+
+                var data = await customizeAction(_controller.Intercept(url.WithTimeout(_controller.DefaultTimeout)));
+
+                return TypedResult<T>.Success(data);
+            }
+            catch (FlurlHttpException ex)
+            {
+                return TypedResult<T>.Exception(ex);
             }
         }
 

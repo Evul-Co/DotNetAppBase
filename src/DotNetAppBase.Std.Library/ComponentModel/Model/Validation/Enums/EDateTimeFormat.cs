@@ -25,13 +25,12 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Enums
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Validation.Enums;
+
+public enum EDateTimeFormat
 {
-    public enum EDateTimeFormat
-    {
-        Date,
-        Time,
-        DateTime,
-        MonthYear
-    }
+    Date,
+    Time,
+    DateTime,
+    MonthYear
 }

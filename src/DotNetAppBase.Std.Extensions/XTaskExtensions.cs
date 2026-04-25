@@ -31,5 +31,5 @@ using System.Threading.Tasks;
 public static class XTaskExtensions
 // ReSharper restore CheckNamespace
 {
-    public static T ReadValue<T>(this Task<T> task) => task.GetAwaiter().GetResult();
+    public static T ReadValue<T>(this Task<T> task) => task.Result;
 }

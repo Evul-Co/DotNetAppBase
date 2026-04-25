@@ -8,7 +8,7 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <AssemblyName>DotNetAppBase.Std.Extensions</AssemblyName>
     <RootNamespace>DotNetAppBase.Std.Extensions</RootNamespace>
-    <LangVersion>8</LangVersion>
+    <LangVersion>latest</LangVersion>
     <PackageTags>Extensions, Methods, Library</PackageTags>
 
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -18,7 +18,7 @@
     <RepositoryUrl>https://github.com/GrappTec/DotNetAppBase</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageReleaseNotes>Full GrappTec dependencies published to NuGet.</PackageReleaseNotes>
-    <Version>1.3.0</Version>
+    <Version>1.3.4</Version>
     <Authors>Adriano Sepe</Authors>
     <Company>GrappTec</Company>
     <Description>General purpose extensions methods.</Description>
@@ -26,11 +26,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNetAppBase.Std.Library\DotNetAppBase.Std.Library.csproj" />
+    <PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+    <ProjectReference Include="..\DotNetAppBase.Std.Library\DotNetAppBase.Std.Library.csproj" />
   </ItemGroup>
 
 </Project>

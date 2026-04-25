@@ -25,10 +25,9 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Db.Contract
+namespace DotNetAppBase.Std.Db.Contract;
+
+public interface IDatabase : IDbDateTimeProvider
 {
-    public interface IDatabase : IDbDateTimeProvider
-    {
-        bool CheckConnection(out string error);
-    }
+    bool CheckConnection(out string error);
 }

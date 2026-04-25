@@ -29,10 +29,11 @@ using System;
 using DotNetAppBase.Std.Library;
 
 // ReSharper disable CheckNamespace
-internal static class XFlowExtensions
+internal static class InternalFlowExtensions
 // ReSharper restore CheckNamespace
 {
     public static T FlowMustBeNotNull<T>(this T obj) => XHelper.Flow.FlowMustBeNotNull(obj);
+
     public static Context IfIs<T>(this object value, Action<T> isAction) where T : class => new Context(XHelper.Flow.IfIs(value, isAction), value);
 
     public static TResult IfIsGet<T, TResult>(this object value, Func<T, TResult> getAction, TResult defaultValue) where T : class => XHelper.Flow.IfIsGet(value, getAction, defaultValue);

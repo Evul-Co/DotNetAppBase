@@ -25,10 +25,9 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Model.Present
+namespace DotNetAppBase.Std.Library.ComponentModel.Model.Present;
+
+public interface IPresentable
 {
-    public interface IPresentable
-    {
-        string DefaultDisplay { get; }
-    }
+    string DefaultDisplay { get; }
 }

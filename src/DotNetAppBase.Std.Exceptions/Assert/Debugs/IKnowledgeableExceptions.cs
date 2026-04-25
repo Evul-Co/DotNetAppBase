@@ -27,10 +27,9 @@
 
 using System;
 
-namespace DotNetAppBase.Std.Exceptions.Assert.Debugs
+namespace DotNetAppBase.Std.Exceptions.Assert.Debugs;
+
+public interface IKnowledgeableExceptions
 {
-    public interface IKnowledgeableExceptions
-    {
-        bool DoYouKnowAboutMessage(Exception ex, out string message);
-    }
+    bool DoYouKnowAboutMessage(Exception ex, out string message);
 }

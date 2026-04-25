@@ -25,26 +25,14 @@
 
 #endregion
 
-using System.Data;
-using System.Data.Common;
-using DotNetAppBase.Std.Db.Contract;
-#if NETFRAMEWORK
-using System.Data.SqlClient;
+using System;
+using DotNetAppBase.Std.Rmq.Events;
 
-#else
-using Microsoft.Data.SqlClient;
-#endif
-
-namespace DotNetAppBase.Std.Db.SqlServer
+namespace DotNetAppBase.Std.Rmq.Abstraction
 {
-    public class DbServerSession : DbSession
+    public interface IRmqSubscriber
     {
-        public DbServerSession(IDbDatabase dbServerDatabase) : base(dbServerDatabase) { }
-
-        public override DbDataAdapter CreateDataAtapter(DbCommand cmd) => new SqlDataAdapter(cmd.CastTo<SqlCommand>());
-
-        public override DbParameter CreateReturnParameter() => new SqlParameter {ParameterName = "@RETURN_VALUE", Direction = ParameterDirection.ReturnValue};
-
-        public override bool RetryInteractionOnDbExcepion(DbException exception) => SqlServerExceptionHandler.RetryInteraction(Database, exception.CastTo<SqlException>());
+        event EventHandler<RmqReceivedEventArgs> Received;
+        void Initialize(RmqProxy proxy);
     }
 }

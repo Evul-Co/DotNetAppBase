@@ -25,17 +25,16 @@
 
 #endregion
 
-namespace DotNetAppBase.Std.Library.ComponentModel.Collection.Events
+namespace DotNetAppBase.Std.Library.ComponentModel.Collection.Events;
+
+public enum EEntityAction
 {
-    public enum EEntityAction
-    {
-        NotInformed,
+    NotInformed,
 
-        Added,
-        Updated,
-        Removed,
+    Added,
+    Updated,
+    Removed,
 
-        Canceled,
-        Processed
-    }
+    Canceled,
+    Processed
 }

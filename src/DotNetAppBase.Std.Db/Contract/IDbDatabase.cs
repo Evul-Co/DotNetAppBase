@@ -28,26 +28,25 @@
 using System.Data.Common;
 using DotNetAppBase.Std.Db.Enums;
 
-namespace DotNetAppBase.Std.Db.Contract
+namespace DotNetAppBase.Std.Db.Contract;
+
+public interface IDbDatabase : IDatabase
 {
-    public interface IDbDatabase : IDatabase
-    {
-        int CommandTimeout { get; set; }
+    int CommandTimeout { get; set; }
 
-        string ConnectionString { get; }
+    string ConnectionString { get; }
 
-        int ConnectionTimeout { get; set; }
+    int ConnectionTimeout { get; set; }
 
-        IDbSession DefaultSession { get; }
+    IDbSession DefaultSession { get; }
 
-        string Name { get; }
+    string Name { get; }
 
-        EDatabaseOption Options { get; }
+    EDatabaseOption Options { get; }
 
-        DbAccess GetAccess();
+    DbAccess GetAccess();
 
-        DbConnection NewConnection();
+    DbConnection NewConnection();
 
-        IDbSession NewSession();
-    }
+    IDbSession NewSession();
 }

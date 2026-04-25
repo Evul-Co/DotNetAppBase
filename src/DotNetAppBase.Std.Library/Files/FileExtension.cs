@@ -32,61 +32,60 @@ using DotNetAppBase.Std.Exceptions.Assert;
 
 // ReSharper disable UnusedMember.Global
 
-namespace DotNetAppBase.Std.Library.Files
+namespace DotNetAppBase.Std.Library.Files;
+
+public class FileExtension
 {
-    public class FileExtension
+    public static readonly FileExtension Excel = new FileExtension("*.xlsx", EFileExtension.Xlsx);
+
+    public static readonly FileExtension ExcelLegace = new FileExtension("*.xls", EFileExtension.Xls);
+
+    public static readonly FileExtension ExcelAll = new FileExtensions("Planilhas do Excel", Excel, ExcelLegace);
+
+    public static readonly FileExtension Xml = new FileExtension("*.xml", EFileExtension.Xml);
+
+    public static readonly FileExtension Doc = new FileExtension("*.docx", EFileExtension.Docx);
+
+    public static readonly FileExtension DocLegace = new FileExtension("*.doc", EFileExtension.Doc);
+
+    public static readonly FileExtension DocsAll = new FileExtensions("Documentos do Word", Doc, DocLegace);
+
+    public static readonly FileExtension Pdf = new FileExtension("*.pdf", EFileExtension.Pdf);
+
+    public static readonly FileExtension Txt = new FileExtension("*.txt", EFileExtension.Txt);
+
+    public static readonly FileExtension Png = new FileExtension("*.png", EFileExtension.Png);
+
+    public static readonly FileExtension Any = new FileExtension("*.*", EFileExtension.Docx);
+
+    public static readonly FileExtension Eml = new FileExtension("*.eml", EFileExtension.Eml);
+
+    public static readonly FileExtension Csv = new FileExtension("*.csv", EFileExtension.Csv);
+
+    public FileExtension([Localizable(false)] string value, EFileExtension type, string description = null)
     {
-        public static readonly FileExtension Excel = new FileExtension("*.xlsx", EFileExtension.Xlsx);
+        XContract.ArgIsNotNull(value, nameof(value));
 
-        public static readonly FileExtension ExcelLegace = new FileExtension("*.xls", EFileExtension.Xls);
-
-        public static readonly FileExtension ExcelAll = new FileExtensions("Planilhas do Excel", Excel, ExcelLegace);
-
-        public static readonly FileExtension Xml = new FileExtension("*.xml", EFileExtension.Xml);
-
-        public static readonly FileExtension Doc = new FileExtension("*.docx", EFileExtension.Docx);
-
-        public static readonly FileExtension DocLegace = new FileExtension("*.doc", EFileExtension.Doc);
-
-        public static readonly FileExtension DocsAll = new FileExtensions("Documentos do Word", Doc, DocLegace);
-
-        public static readonly FileExtension Pdf = new FileExtension("*.pdf", EFileExtension.Pdf);
-
-        public static readonly FileExtension Txt = new FileExtension("*.txt", EFileExtension.Txt);
-
-        public static readonly FileExtension Png = new FileExtension("*.png", EFileExtension.Png);
-
-        public static readonly FileExtension Any = new FileExtension("*.*", EFileExtension.Docx);
-
-        public static readonly FileExtension Eml = new FileExtension("*.eml", EFileExtension.Eml);
-
-        public static readonly FileExtension Csv = new FileExtension("*.csv", EFileExtension.Csv);
-
-        public FileExtension([Localizable(false)] string value, EFileExtension type, string description = null)
+        if (XHelper.Enums.IsIn(type, EFileExtension.Unknown, EFileExtension.MultiExtensions) && string.IsNullOrEmpty(description))
         {
-            XContract.ArgIsNotNull(value, nameof(value));
-
-            if (XHelper.Enums.IsIn(type, EFileExtension.Unknown, EFileExtension.MultiExtensions) && string.IsNullOrEmpty(description))
-            {
-                throw new ArgumentNullException(nameof(description));
-            }
-
-            Type = type;
-            Value = value;
-            Description = description ?? XHelper.Enums.GetDisplay(type);
+            throw new ArgumentNullException(nameof(description));
         }
 
-        public string Description { get; }
-
-        public EFileExtension Type { get; }
-
-        public virtual string Value { get; }
-
-        // ReSharper disable LocalizableElement
-        public string AsFilter() => $"{Description}|{Value}";
-        // ReSharper restore LocalizableElement
-
-        [Localizable(false)]
-        public virtual string ChangeExtension(string fileName) => Path.ChangeExtension(fileName, Value.Replace("*.", string.Empty));
+        Type = type;
+        Value = value;
+        Description = description ?? XHelper.Enums.GetDisplay(type);
     }
+
+    public string Description { get; }
+
+    public EFileExtension Type { get; }
+
+    public virtual string Value { get; }
+
+    // ReSharper disable LocalizableElement
+    public string AsFilter() => $"{Description}|{Value}";
+    // ReSharper restore LocalizableElement
+
+    [Localizable(false)]
+    public virtual string ChangeExtension(string fileName) => Path.ChangeExtension(fileName, Value.Replace("*.", string.Empty));
 }

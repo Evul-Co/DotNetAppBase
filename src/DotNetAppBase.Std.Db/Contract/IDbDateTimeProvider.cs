@@ -27,10 +27,9 @@
 
 using System;
 
-namespace DotNetAppBase.Std.Db.Contract
+namespace DotNetAppBase.Std.Db.Contract;
+
+public interface IDbDateTimeProvider
 {
-    public interface IDbDateTimeProvider
-    {
-        DateTime GetDateTime();
-    }
+    DateTime GetDateTime();
 }

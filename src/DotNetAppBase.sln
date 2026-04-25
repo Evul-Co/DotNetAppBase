@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Db.SqlSer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Worker", "DotNetAppBase.Std.Worker\DotNetAppBase.Std.Worker.csproj", "{4242F096-BD03-4832-B2FB-001A27B6308D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetAppBase.Std.RestClient", "DotNetAppBase.Std.RestClient\DotNetAppBase.Std.RestClient.csproj", "{42DE0000-C222-444F-B617-1A8536EA30E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.RestClient", "DotNetAppBase.Std.RestClient\DotNetAppBase.Std.RestClient.csproj", "{42DE0000-C222-444F-B617-1A8536EA30E5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetAppBase.Std.Rmq", "DotNetAppBase.Std.Rmq\DotNetAppBase.Std.Rmq.csproj", "{723D1583-B08D-4DF0-9A76-A4CDA9AC8401}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,12 +59,16 @@ Global
 		{42DE0000-C222-444F-B617-1A8536EA30E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42DE0000-C222-444F-B617-1A8536EA30E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42DE0000-C222-444F-B617-1A8536EA30E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{723D1583-B08D-4DF0-9A76-A4CDA9AC8401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{723D1583-B08D-4DF0-9A76-A4CDA9AC8401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{723D1583-B08D-4DF0-9A76-A4CDA9AC8401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{723D1583-B08D-4DF0-9A76-A4CDA9AC8401}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.Common.6.0.1304.0\lib\NET45;packages\EnterpriseLibrary.Data.6.0.1304.0\lib\NET45
 		SolutionGuid = {B7D1793A-2BC1-4B83-837C-926975BDC40E}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.Common.6.0.1304.0\lib\NET45;packages\EnterpriseLibrary.Data.6.0.1304.0\lib\NET45
 	EndGlobalSection
 EndGlobal

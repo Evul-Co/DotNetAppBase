@@ -25,18 +25,15 @@
 
 #endregion
 
-using System.IO.Ports;
-
-namespace DotNetAppBase.Std.Library
+namespace DotNetAppBase.Std.Rmq.Abstraction
 {
-    public static partial class XHelper
+    public interface IRmqProxy
     {
-        public static partial class Comm
-        {
-            public static class Serials
-            {
-                public static string[] GetPorts() => SerialPort.GetPortNames();
-            }
-        }
+        bool IsConnected { get; }
+        bool Add(byte[] data, byte maxAttempts = 3);
+        bool Add(object model, byte maxAttempts = 3);
+        bool Connect();
+        void Disconnect();
+        void AddSubscriber(RmqSubscriber subscriber);
     }
 }

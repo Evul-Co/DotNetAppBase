@@ -71,7 +71,7 @@ public static class XSqlParameterExtensions
         return parameter;
     }
 
-    public static SqlXml AsSqlXml(this string content) => new SqlXml(XmlReader.Create(new StringReader(content)));
+    public static SqlXml AsSqlXml(this string content) => new(XmlReader.Create(new StringReader(content)));
 
     [Localizable(false)]
     public static SqlParameter Set(this SqlParameter parameter, string name, SqlDbType type, object value, bool setDbNullOnNullValue = true)

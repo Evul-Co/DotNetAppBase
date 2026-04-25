@@ -27,23 +27,22 @@
 
 using System.Threading;
 
-namespace DotNetAppBase.Std.Library
+namespace DotNetAppBase.Std.Library;
+
+public partial class XHelper
 {
-    public partial class XHelper
+    public static partial class Async
     {
-        public static partial class Async
+        public static class Threads
         {
-            public static class Threads
+            public static Thread RunInSta(ThreadStart action)
             {
-                public static Thread RunInSta(ThreadStart action)
-                {
-                    var thread = new Thread(action);
-                    thread.SetApartmentState(ApartmentState.STA);
+                var thread = new Thread(action);
+                thread.SetApartmentState(ApartmentState.STA);
 
-                    thread.Start();
+                thread.Start();
 
-                    return thread;
-                }
+                return thread;
             }
         }
     }
