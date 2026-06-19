@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>false</DelaySign>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)eng\signing\DotNetAppBase.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+</Project>
